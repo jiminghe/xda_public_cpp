@@ -163,6 +163,7 @@ int main(void)
 	XsOutputConfigurationArray configArray;
 	configArray.push_back(XsOutputConfiguration(XDI_PacketCounter, 0));
 	configArray.push_back(XsOutputConfiguration(XDI_SampleTimeFine, 0));
+	configArray.push_back(XsOutputConfiguration(XDI_StatusWord, 0));
 
 	if (device->deviceId().isImu())
 	{
@@ -172,14 +173,22 @@ int main(void)
 	}
 	else if (device->deviceId().isVru() || device->deviceId().isAhrs())
 	{
+		configArray.push_back(XsOutputConfiguration(XDI_Acceleration, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_FreeAcceleration, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_RateOfTurn, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_MagneticField, 100));
 		configArray.push_back(XsOutputConfiguration(XDI_Quaternion, 100));
 	}
 	else if (device->deviceId().isGnss())
 	{
+		configArray.push_back(XsOutputConfiguration(XDI_Acceleration, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_FreeAcceleration, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_RateOfTurn, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_MagneticField, 100));
 		configArray.push_back(XsOutputConfiguration(XDI_Quaternion, 100));
-		configArray.push_back(XsOutputConfiguration(XDI_LatLon, 100));
-		configArray.push_back(XsOutputConfiguration(XDI_AltitudeEllipsoid, 100));
-		configArray.push_back(XsOutputConfiguration(XDI_VelocityXYZ, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_LatLon  | XDI_SubFormatFp1632, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_AltitudeEllipsoid  | XDI_SubFormatFp1632, 100));
+		configArray.push_back(XsOutputConfiguration(XDI_VelocityXYZ  | XDI_SubFormatFp1632, 100));
 	}
 	else
 	{
@@ -204,11 +213,13 @@ int main(void)
 	if (!device->startRecording())
 		return handleError("Failed to start recording. Aborting.");
 
-	cout << "\nMain loop. Recording data for 10 seconds." << endl;
+	int64_t timeToRun = 100000; //ms, change this value to the desired time
+	cout << "\nMain loop. Recording data for "<< (timeToRun/1000) << " seconds." << endl;
 	cout << string(79, '-') << endl;
+	
 
 	int64_t startTime = XsTime::timeStampNow();
-	while (XsTime::timeStampNow() - startTime <= 10000)
+	while (XsTime::timeStampNow() - startTime <= timeToRun)
 	{
 		if (callback.packetAvailable())
 		{
@@ -216,11 +227,17 @@ int main(void)
 
 			// Retrieve a packet
 			XsDataPacket packet = callback.getNextPacket();
+			if (packet.containsSampleTimeFine())
+			{
+				uint32_t sampleTimeFine = packet.sampleTimeFine();
+				cout << "\r"
+					<< "SampleTine:" << sampleTimeFine;
+			}
+
 			if (packet.containsCalibratedData())
 			{
 				XsVector acc = packet.calibratedAcceleration();
-				cout << "\r"
-					<< "Acc X:" << acc[0]
+				cout << " |Acc X:" << acc[0]
 					<< ", Acc Y:" << acc[1]
 					<< ", Acc Z:" << acc[2];
 
@@ -235,11 +252,19 @@ int main(void)
 					<< ", Mag Z:" << mag[2];
 			}
 
+			if (packet.containsFreeAcceleration())
+			{
+				XsVector free_acc = packet.freeAcceleration();
+				cout << " |free_acc X:" << free_acc[0]
+					<< ", free_accyr Y:" << free_acc[1]
+					<< ", free_acc Z:" << free_acc[2];
+
+			}
+
 			if (packet.containsOrientation())
 			{
 				XsQuaternion quaternion = packet.orientationQuaternion();
-				cout << "\r"
-					<< "q0:" << quaternion.w()
+				cout << " |q0:" << quaternion.w()
 					<< ", q1:" << quaternion.x()
 					<< ", q2:" << quaternion.y()
 					<< ", q3:" << quaternion.z();
@@ -266,6 +291,12 @@ int main(void)
 				cout << " |E:" << vel[0]
 					<< ", N:" << vel[1]
 					<< ", U:" << vel[2];
+			}
+
+			if (packet.containsStatus())
+			{
+				uint32_t status = packet.status();
+				cout << " |Status: " << status << endl;
 			}
 			
 			cout << flush;
