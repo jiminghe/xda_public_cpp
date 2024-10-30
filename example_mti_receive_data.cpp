@@ -256,7 +256,7 @@ int main(void)
 			{
 				XsVector free_acc = packet.freeAcceleration();
 				cout << " |free_acc X:" << free_acc[0]
-					<< ", free_accyr Y:" << free_acc[1]
+					<< ", free_acc Y:" << free_acc[1]
 					<< ", free_acc Z:" << free_acc[2];
 
 			}
