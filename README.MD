@@ -4,11 +4,17 @@
 
 This code is based on the MT SDK 2025.0 stable release for Linux x64, with some fixes in the Makefile for `make clean` and `xscommon` dependency. This code was tested on an Ubuntu 22.04 virtual device with the MTI-630 sensor.
 
+## Clone this branch
+```bash
+git clone --recursive --branch cmake https://github.com/jiminghe/xda_public_cpp.git
+```
+
 ## Installation
 
 To build the project, execute the following commands:
 
 ```bash
+cd xda_public_cpp
 mkdir build
 cd build
 cmake ..
