@@ -1,5 +1,6 @@
 #include "callback_handler.h"
 #include <cassert>
+#include <iostream>
 
 CallbackHandler::CallbackHandler(size_t maxBufferSize)
     : m_maxNumberOfPacketsInBuffer(maxBufferSize)
@@ -37,4 +38,12 @@ void CallbackHandler::onLiveDataAvailable(XsDevice*, const XsDataPacket* packet)
     m_packetBuffer.push_back(*packet);
     ++m_numberOfPacketsInBuffer;
     assert(m_numberOfPacketsInBuffer <= m_maxNumberOfPacketsInBuffer);
+}
+
+void CallbackHandler::onError(XsDevice* device, XsResultValue error)
+{
+    if (m_errorCallback) {
+        m_errorCallback(device, error);
+    }
+    //std::cout << "CallbackHandler::onError, error = " << XsResultValue_toString(error) << std::endl;
 }

@@ -71,6 +71,8 @@ XsOutputConfigurationArray DeviceConfigurator::createConfigArray(XsDevice* devic
         configArray.push_back(XsOutputConfiguration(XDI_Acceleration, 100));
         configArray.push_back(XsOutputConfiguration(XDI_RateOfTurn, 100));
         configArray.push_back(XsOutputConfiguration(XDI_MagneticField, 100));
+        // configArray.push_back(XsOutputConfiguration(XDI_AccelerationHR, 0xFFFF));
+        // configArray.push_back(XsOutputConfiguration(XDI_RateOfTurnHR, 0xFFFF));
     }
     else if (device->deviceId().isGnss()) {
         configArray.push_back(XsOutputConfiguration(XDI_Quaternion, 100));

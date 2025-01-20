@@ -2,99 +2,140 @@
 #include "device_scanner.h"
 #include "device_configurator.h"
 #include "data_logger.h"
-#include "measurement_handler.h"
+#include "imu_sensor.h"
+#include "imu_data_processor.h"
 #include <iostream>
 #include <limits>
 
+using namespace std;
+
 // Define the global journal variable
 Journaller* gJournal = 0;
+static volatile bool keep_running = true;
 
-int getMeasurementDuration() {
-    int minutes;
-    const int DEFAULT_DURATION_MS = 100000; // 100 seconds default
 
-    std::cout << "Enter measurement duration in minutes (or press Enter for default 100 seconds): ";
-    
-    // Get the entire line
-    std::string input;
-    std::getline(std::cin, input);
-    
-    // If input is empty, return default duration
-    if (input.empty()) {
-        std::cout << "Using default duration of 100 seconds." << std::endl;
-        return DEFAULT_DURATION_MS;
+void printPacketData(const XsDataPacket& packet)
+{
+    std::cout << std::setw(5) << std::fixed << std::setprecision(2);
+
+    if (packet.containsSampleTimeFine())
+        cout << "\r" << "SampleTimeFine:" << packet.sampleTimeFine();
+
+    if (packet.containsOrientation())
+    {
+        XsQuaternion quaternion = packet.orientationQuaternion();
+        // cout << " |q0:" << quaternion.w()
+        //     << ", q1:" << quaternion.x()
+        //     << ", q2:" << quaternion.y()
+        //     << ", q3:" << quaternion.z();
+
+        XsEuler euler = packet.orientationEuler();
+        cout << " |Roll:" << euler.roll()
+            << ", Pitch:" << euler.pitch()
+            << ", Yaw:" << euler.yaw();
     }
 
-    try {
-        minutes = std::stoi(input);
-        
-        // Check for negative or zero values
-        if (minutes <= 0) {
-            std::cout << "Invalid duration. Using default duration of 100 seconds." << std::endl;
-            return DEFAULT_DURATION_MS;
-        }
-        
-        // Convert minutes to milliseconds
-        int64_t durationMs = static_cast<int64_t>(minutes) * 60 * 1000;
-        
-        // Check for overflow
-        if (durationMs > std::numeric_limits<int>::max()) {
-            std::cout << "Duration too large. Using default duration of 100 seconds." << std::endl;
-            return DEFAULT_DURATION_MS;
-        }
-        
-        std::cout << "Setting measurement duration to " << minutes << " minutes." << std::endl;
-        return static_cast<int>(durationMs);
+    if (packet.containsCalibratedData())
+    {
+        XsVector acc = packet.calibratedAcceleration();
+        cout << " |Acc X:" << acc[0]
+            << ", Acc Y:" << acc[1]
+            << ", Acc Z:" << acc[2];
+
+        XsVector gyr = packet.calibratedGyroscopeData();
+        cout << " |Gyr X:" << gyr[0]
+            << ", Gyr Y:" << gyr[1]
+            << ", Gyr Z:" << gyr[2];
+
+        XsVector mag = packet.calibratedMagneticField();
+        // cout << " |Mag X:" << mag[0]
+        //     << ", Mag Y:" << mag[1]
+        //     << ", Mag Z:" << mag[2];
     }
-    catch (const std::invalid_argument& e) {
-        std::cout << "Invalid input. Using default duration of 100 seconds." << std::endl;
-        return DEFAULT_DURATION_MS;
+
+    if (packet.containsLatitudeLongitude())
+    {
+        XsVector latLon = packet.latitudeLongitude();
+        cout << " |Lat:" << latLon[0]
+            << ", Lon:" << latLon[1];
     }
-    catch (const std::out_of_range& e) {
-        std::cout << "Number too large. Using default duration of 100 seconds." << std::endl;
-        return DEFAULT_DURATION_MS;
+
+    if (packet.containsAltitude())
+        cout << " |Alt:" << packet.altitude();
+
+    if (packet.containsVelocity())
+    {
+        XsVector vel = packet.velocity(XDI_CoordSysEnu);
+        cout << " |E:" << vel[0]
+            << ", N:" << vel[1]
+            << ", U:" << vel[2];
     }
+
+    std::cout << std::flush;
 }
 
-int main()
-{
-    int measurementDuration = getMeasurementDuration();
+int main() {
+    
+    
+    ImuSensor sensor;
+    
+    // Set up disconnection handling
+    sensor.setDisconnectionCallback([]() {
+        keep_running = false;
+    });
 
-    DeviceScanner scanner;
-    if (!scanner.scanAndConnect()) {
-        std::cout << "Failed to connect to device." << std::endl;
+    if (!sensor.initialize() || !sensor.startLogging()) {
+        std::cout << "Failed to initialize sensor" << std::endl;
         return -1;
     }
 
-    XsDevice* device = scanner.getDevice();
-    std::string device_product_code = device->productCode().toStdString();
-    std::string device_id = device->deviceId().toString().toStdString();
+    ImuDataProcessor processor;
+    sensor.startMeasurement();
 
-    std::cout << "Device: " << device_product_code << ", with ID: " << device_id << " opened." << std::endl;
+    // Main loop
+    while (keep_running) {
+        if (!sensor.isConnected()) {
+            std::cout << "Device no longer connected!" << std::endl;
+            break;
+        }
 
-    CallbackHandler callback;
-    device->addCallbackHandler(&callback);
+        try {
+            if (sensor.hasNewData()) {
+                XsDataPacket packet = sensor.getLatestData();
+                processor.addData(packet);
 
-    DeviceConfigurator configurator;  // Create configurator instance
-    if (!configurator.configureDevice(device)) {
-        std::cout << "Failed to configure device." << std::endl;
-        return -1;
+
+                printPacketData(packet);
+
+                //check if manual gyro bias estimation is working
+                // if (packet.containsStatus())
+                // {
+                //     uint32_t status = packet.status();
+                //     uint32_t no_rotation_update = (status >> 3) & 0x3;
+                //     std::cout << "no_rotation_update_status = " << no_rotation_update << std::endl;
+                // }
+
+                static int counter = 0;
+                if (++counter % 100 == 0) {
+                    XsVector avgAcc = processor.getAverageAcceleration();
+                    std::cout << "Average acceleration (10s): "
+                              << avgAcc[0] << ", " 
+                              << avgAcc[1] << ", " 
+                              << avgAcc[2] << std::endl;
+                }
+            }
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Error during measurement: " << e.what() << std::endl;
+            break;
+        }
+
+        XsTime::msleep(1);
     }
 
-    if (!DataLogger::createLogFile(device)) {
-        std::cout << "Failed to create log file." << std::endl;
-        return -1;
-    }
+    sensor.stopMeasurement();
+    sensor.stopLogging();
 
-    MeasurementHandler::performMeasurement(device, callback, measurementDuration);
-
-    configurator.stopGyroBiasEstimation();  // Stop the estimation before closing
-
-    if (!DataLogger::stopAndCloseLog(device)) {
-        std::cout << "Failed to close log file." << std::endl;
-        return -1;
-    }
-
-    std::cout << "\nMeasurement completed successfully." << std::endl;
+    std::cout << "\nProgram terminated" << std::endl;
     return 0;
 }
