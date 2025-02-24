@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 
+
 GyroBiasEstimator::GyroBiasEstimator(XsDevice* device)
     : m_device(device)
     , m_isRunning(false)
@@ -22,8 +23,8 @@ void GyroBiasEstimator::startPeriodicEstimation(uint16_t intervalSeconds, uint16
     m_isRunning = true;
     m_estimationThread = std::thread([this, intervalSeconds, durationSeconds]() {
         // Add initial delay before starting periodic estimation
-        // std::cout << "Waiting 15 seconds before starting periodic estimation..." << std::endl;
-        for (int i = 0; i < 15 && m_isRunning; ++i) {
+        // std::cout << "Waiting {intervalSeconds} seconds before starting periodic estimation..." << std::endl;
+        for (int i = 0; i < intervalSeconds && m_isRunning; ++i) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
         

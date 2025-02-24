@@ -19,56 +19,56 @@ void printPacketData(const XsDataPacket& packet)
     std::cout << std::setw(5) << std::fixed << std::setprecision(2);
 
     if (packet.containsSampleTimeFine())
-        cout << "\r" << "SampleTimeFine:" << packet.sampleTimeFine();
+    cout << "\r" << "SampleTimeFine:" << packet.sampleTimeFine();
 
     if (packet.containsOrientation())
     {
         XsQuaternion quaternion = packet.orientationQuaternion();
-        // cout << " |q0:" << quaternion.w()
-        //     << ", q1:" << quaternion.x()
-        //     << ", q2:" << quaternion.y()
-        //     << ", q3:" << quaternion.z();
+    // cout << " |q0:" << quaternion.w()
+    //     << ", q1:" << quaternion.x()
+    //     << ", q2:" << quaternion.y()
+    //     << ", q3:" << quaternion.z();
 
-        XsEuler euler = packet.orientationEuler();
-        cout << " |Roll:" << euler.roll()
-            << ", Pitch:" << euler.pitch()
-            << ", Yaw:" << euler.yaw();
+    XsEuler euler = packet.orientationEuler();
+    cout << " |Roll:" << euler.roll()
+    << ", Pitch:" << euler.pitch()
+    << ", Yaw:" << euler.yaw();
     }
 
     if (packet.containsCalibratedData())
     {
         XsVector acc = packet.calibratedAcceleration();
-        cout << " |Acc X:" << acc[0]
-            << ", Acc Y:" << acc[1]
-            << ", Acc Z:" << acc[2];
+    cout << " |Acc X:" << acc[0]
+    << ", Acc Y:" << acc[1]
+    << ", Acc Z:" << acc[2];
 
-        XsVector gyr = packet.calibratedGyroscopeData();
-        cout << " |Gyr X:" << gyr[0]
-            << ", Gyr Y:" << gyr[1]
-            << ", Gyr Z:" << gyr[2];
+    XsVector gyr = packet.calibratedGyroscopeData();
+    cout << " |Gyr X:" << gyr[0]
+    << ", Gyr Y:" << gyr[1]
+    << ", Gyr Z:" << gyr[2];
 
-        XsVector mag = packet.calibratedMagneticField();
-        // cout << " |Mag X:" << mag[0]
-        //     << ", Mag Y:" << mag[1]
-        //     << ", Mag Z:" << mag[2];
+    XsVector mag = packet.calibratedMagneticField();
+    // cout << " |Mag X:" << mag[0]
+    //     << ", Mag Y:" << mag[1]
+    //     << ", Mag Z:" << mag[2];
     }
 
     if (packet.containsLatitudeLongitude())
     {
         XsVector latLon = packet.latitudeLongitude();
-        cout << " |Lat:" << latLon[0]
-            << ", Lon:" << latLon[1];
+    cout << " |Lat:" << latLon[0]
+    << ", Lon:" << latLon[1];
     }
 
     if (packet.containsAltitude())
-        cout << " |Alt:" << packet.altitude();
+    cout << " |Alt:" << packet.altitude();
 
     if (packet.containsVelocity())
     {
         XsVector vel = packet.velocity(XDI_CoordSysEnu);
-        cout << " |E:" << vel[0]
-            << ", N:" << vel[1]
-            << ", U:" << vel[2];
+    cout << " |E:" << vel[0]
+    << ", N:" << vel[1]
+    << ", U:" << vel[2];
     }
 
     std::cout << std::flush;
@@ -118,10 +118,10 @@ int main() {
                 static int counter = 0;
                 if (++counter % 100 == 0) {
                     XsVector avgAcc = processor.getAverageAcceleration();
-                    std::cout << "Average acceleration (10s): "
-                              << avgAcc[0] << ", " 
-                              << avgAcc[1] << ", " 
-                              << avgAcc[2] << std::endl;
+                    //std::cout << "Average acceleration (10s): "
+                    //          << avgAcc[0] << ", " 
+                    //          << avgAcc[1] << ", " 
+                    //          << avgAcc[2] << std::endl;
                 }
             }
         }

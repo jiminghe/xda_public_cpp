@@ -1,5 +1,11 @@
 #include "device_configurator.h"
 #include <iostream>
+#include <chrono>
+#include <thread>
+
+#define GYRO_BIAS_INITIAL_DURATION 5
+#define GYRO_BIAS_INTERVAL 15
+#define GYRO_BIAS_DURATION 3
 
 DeviceConfigurator::DeviceConfigurator() : m_estimator(nullptr) {}
 
@@ -38,18 +44,23 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
         return false;
     }
 
+    //wait for 20ms until sending next command, otherwise the initial gyro bias estimation won't work.
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+
     // Create and store the gyro bias estimator
     m_estimator = std::make_unique<GyroBiasEstimator>(device);
     
     // Perform initial estimation for 6 seconds
-    std::cout << "Performing initial gyro bias estimation for 6 seconds..." << std::endl;
-    if (!m_estimator->performSingleEstimation(6)) {
+    std::cout << "Performing initial gyro bias estimation for "<< GYRO_BIAS_INITIAL_DURATION <<" seconds..." << std::endl;
+    if (!m_estimator->performSingleEstimation(GYRO_BIAS_INITIAL_DURATION)) {
         std::cout << "Initial gyro bias estimation failed." << std::endl;
         return false;
     }
 
-    // Start periodic estimation (every 15 seconds with 3 seconds duration)
-    m_estimator->startPeriodicEstimation(15, 3);
+    // Start periodic estimation (every GYRO_BIAS_INTERVAL seconds with GYRO_BIAS_DURATION seconds duration)
+    std::cout << "Start Periodic estimation with interval: " << GYRO_BIAS_INTERVAL << "s, duration: " << GYRO_BIAS_DURATION << "s." << std::endl;
+    m_estimator->startPeriodicEstimation(GYRO_BIAS_INTERVAL, GYRO_BIAS_DURATION);
 
     return true;
 }
