@@ -1,0 +1,1158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Header Files\xstypes">
+      <UniqueIdentifier>{8f8491d8-bc5d-44ea-b365-193f9886a935}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xscontroller">
+      <UniqueIdentifier>{fea5a0d9-cd33-4434-9492-2f751bb2de2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\xscommon">
+      <UniqueIdentifier>{bf382691-6853-44c7-ae5e-fb1db3c3e93f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xstypes">
+      <UniqueIdentifier>{4690e1a9-0f78-4b67-a5bb-d162b42129fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xscontroller">
+      <UniqueIdentifier>{91d91a36-6994-4662-96f5-e5a5d05eb8f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xscommon">
+      <UniqueIdentifier>{33880592-cbe8-4a88-b7bc-85ae5716ce6a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="xspublic\xscommon\xsens_threadpool.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\xprintf.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\threading.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\stackwalker.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\stackdumper.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\journalthreader.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\journaller.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\journalfile.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\journalexception.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\enumexpandersbase.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\consolelogger.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\additionalloggerbase.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xswinusb.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsscanner.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xslibusb.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsdevice_def.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsdef.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xscontrol_def.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xdacommunicatorfactory.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\usbinterface.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\usbcommunicator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\supportedsyncsettings.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\serialportcommunicator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\serialinterface.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\serialcommunicator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\scanner.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\replyobject.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\replymonitor.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\proxycommunicator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\protocolmanager.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\protocolhandler.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\packetstamper.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\packeterrorrateestimator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\nmea_protocolhandler.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtthread.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtdevice.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtbfilecommunicator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtbdatalogger.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\messageserializer.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\messageextractor.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\iointerfacefile.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\iointerface.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\enumexpanders.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\enumerateusbdevices.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\deviceredetector.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\devicefactory.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\devicecommunicator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\datapoller.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\dataparser.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\datapacketcache.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\datalogger.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\communicatorfactory.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\communicator.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\callbackmanagerxda.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\broadcastdevice.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xssensorranges.cpp">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsdebugcounters.cpp">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsdatapacket.cpp">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\datapacket_p.cpp">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsversion.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsvector3.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsvector.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xstimeinfo.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xstypedefs.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xstriggerindicationdata.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xstimestamp.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xstime.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsthread.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xssyncsettingarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xssyncsetting.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsstringarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsstring.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xssocket.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xssnapshot.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xssimpleversion.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xssdidata.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsrssi.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsresultvalue.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsrange.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsquaternionarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsquaternion.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsportinfoarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsportinfo.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsoutputconfigurationarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsoutputconfiguration.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsmessagearray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsmessage.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsmatrix3x3.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsmatrix.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsmalloc.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xslibraryloader.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsintarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsint64array.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsfile.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xseuler.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsdeviceidarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsdeviceid.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xscalibrateddata.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsbytearray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsbaud.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsusbhubinfo.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsrejectreason.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsdevicestate.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsdeviceptrarray.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsdeviceconfiguration.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\xsconnectivitystate.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\synclinemk4.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\synclinegmt.c">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\udev.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtixdevice.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtix0device.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtix00device.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtigdevice.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mtibasedevice.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mti7_mti8device.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsdatapacketptrarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\restorecommunication.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsfilterprofilearray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsfilterprofile.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsstringoutputtypearray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mti6x0device.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xscanoutputconfiguration.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xscanoutputconfigurationarray.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xstypes\xsglovedata.c">
+      <Filter>Source Files\xstypes</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscommon\xsens_math_throw.cpp">
+      <Filter>Source Files\xscommon</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\streaminterface.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mti8x0device.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mti3x0device.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\dotdevice.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="xspublic\xscontroller\mti9x0device.cpp">
+      <Filter>Source Files\xscontroller</Filter>
+    </ClCompile>
+    <ClCompile Include="src\callback_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\data_logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\device_configurator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\device_scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gyro_bias_estimator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imu_data_processor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imu_sensor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xspublic\xscommon\abstractadditionallogger.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\additionalloggerbase.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\calltracer.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\common_qdebug.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xscommon_config.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\consolelogger.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\enumexpandersbase.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\journalexception.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\journalfile.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\journaller.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\journalloglevel.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\journalstackwalker.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\journalthreader.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\stackdumper.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\stackwalker.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\threading.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xprintf.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_janitors.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_mutex.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_nonintrusive_shared_pointer.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_shared_pointer.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_threadpool.h">
+      <Filter>Header Files\xscommon</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\broadcastdevice.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\callbackmanagerxda.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\communicator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\communicatorfactory.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\compat.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\datalogger.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\datapacketcache.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\dataparser.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\datapoller.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\devicecommunicator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\devicefactory.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\deviceredetector.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\devicetypes.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\enumerateusbdevices.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\enumexpanders.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\fileloader.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\gpsstatus.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\idfetchhelpers.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\iointerface.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\iointerfacefile.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\iprotocolhandler.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\iprotocolmanager.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\lastresultmanager.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\messageextractor.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\messagelocation.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\messageserializer.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtbdatalogger.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtbfilecommunicator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtdevice.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtsyncsettings.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtthread.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\nmea_protocolhandler.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\openportstage.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\packeterrorrateestimator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\packetstamper.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\protocolhandler.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\protocolmanager.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\proxycommunicator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\rangequeue.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\replymonitor.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\replyobject.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\rx_tx_log.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\scanner.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\scenariomatchpred.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\serialcommunicator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\serialinterface.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\serialportcommunicator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\simpleprotocolmanager.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\streaminterface.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\supportedsyncsettings.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\synclinegmt.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\synclinemk4.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\usbcommunicator.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\usbinterface.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xdacommunicatorfactory.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsaccesscontrolmode.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsalignmentframe.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xscalibrateddatamode.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xscallback.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xscallbackplainc.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsconnectivitystate.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xscontrol_def.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xscontrol_public.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xscontrollerconfig.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xscoordinatesystem.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdef.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdevice_def.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdevice_public.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdeviceconfiguration.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdeviceoptionflag.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdeviceparameter.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdeviceparameteridentifier.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdeviceptr.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdeviceptrarray.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdeviceptrlist.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsdevicestate.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xserrormode.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsfloatformat.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsgnssplatform.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsicccommand.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsiccrepmotionresult.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xslibusb.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsnmeastringtype.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsoperationalmode.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsoption.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsorientationmode.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsprocessingflag.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsprotocoltype.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsrejectreason.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsresetmethod.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsscanner.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsselftestresult.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsstatusflag.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xsusbhubinfo.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\xswinusb.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\datapacket_p.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\pstdint.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\resource.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsanalogindata.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsbaud.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsbaudcode.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsbaudrate.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsbusid.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsbytearray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscalibrateddata.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscontrolline.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscopy.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdataidentifier.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdataidentifiervalue.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdatapacket.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdebugcounters.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdeviceid.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdeviceidarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdeviceidlist.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdid.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xseuler.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsexception.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsfile.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsfilepos.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsinforequest.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsint64array.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsintarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsintlist.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xslibraryloader.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsmalloc.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsmath.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsmatrix.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsmatrix3x3.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsmessage.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsmessagearray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsmessagelist.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsoutputconfiguration.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsoutputconfigurationarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsoutputconfigurationlist.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsplatform.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsportinfo.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsportinfoarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsportinfolist.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xspressure.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsquaternion.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsquaternionarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsrange.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsrawgnsspvtdata.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsrawgnsssatinfo.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsresultvalue.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsrssi.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsscrdata.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssdidata.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssensorranges.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssimpleversion.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssnapshot.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssocket.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsstring.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsstringarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsstringstreaming.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssyncfunction.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssyncline.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssyncpolarity.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssyncrole.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssyncsetting.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssyncsettingarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xssyncsettinglist.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsthread.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstime.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstimestamp.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstriggerindicationdata.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstypedefs.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstypesconfig.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstypesdynlib.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstypesinfo.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsushortvector.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xstimeinfo.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsvector.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsvector3.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsversion.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsxbusmessageid.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\udev.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtixdevice.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtix0device.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtix00device.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtigdevice.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mtibasedevice.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mti7_mti8device.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdatapacketptrarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsdatapacketptr.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\restorecommunication.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsfilterprofile.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsfilterprofilearray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsstringoutputtype.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsstringoutputtypearray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_debugtools.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_generic_matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscommon\xsens_math_throw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mti6x0device.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscandataidentifier.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscanframeformat.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscanoutputconfiguration.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscanoutputconfigurationarray.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xscanbaudcode.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsglovedata.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xstypes\xsglovesnapshot.h">
+      <Filter>Header Files\xstypes</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mti8x0device.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\mti3x0device.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="xspublic\xscontroller\dotdevice.h">
+      <Filter>Header Files\xscontroller</Filter>
+    </ClInclude>
+    <ClInclude Include="include\callback_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\data_logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\device_configurator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\device_scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gyro_bias_estimator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imu_data_processor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imu_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

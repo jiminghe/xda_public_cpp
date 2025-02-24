@@ -1,0 +1,574 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="public_xda_cpp_example_mti_receive_data" DependsOnTargets="Build" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>MTi_Receive_Data</ProjectName>
+    <ProjectGuid>{8BFF1125-985B-40FE-8DCE-6C7780948FF6}</ProjectGuid>
+    <RootNamespace>src_example</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Out\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(ProjectName)\$(Configuration)\Int\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Out\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(ProjectName)\$(Configuration)\Int\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Out\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(ProjectName)\$(Configuration)\Int\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\Out\</OutDir>
+    <IntDir>$(SolutionDir)$(Platform)\$(ProjectName)\$(Configuration)\Int\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)xspublic\;$(ProjectDir)winusb\include;$(ProjectDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XDA_STATIC_LIB;XSTYPES_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>$(ProjectDir)xspublic\xscontroller\xscontrollerconfig.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Iphlpapi.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)public\winusb\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)xspublic\;$(ProjectDir)winusb\include;$(ProjectDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XDA_STATIC_LIB;XSTYPES_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>$(ProjectDir)xspublic\xscontroller\xscontrollerconfig.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Iphlpapi.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)public\winusb\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)xspublic\;$(ProjectDir)winusb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XDA_STATIC_LIB;XSTYPES_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>$(ProjectDir)xspublic\xscontroller\xscontrollerconfig.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Iphlpapi.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)public\winusb\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)xspublic\;$(ProjectDir)winusb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XDA_STATIC_LIB;XSTYPES_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForcedIncludeFiles>$(ProjectDir)xspublic\xscontroller\xscontrollerconfig.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>Iphlpapi.lib;setupapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)public\winusb\win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\callback_handler.cpp" />
+    <ClCompile Include="src\data_logger.cpp" />
+    <ClCompile Include="src\device_configurator.cpp" />
+    <ClCompile Include="src\device_scanner.cpp" />
+    <ClCompile Include="src\gyro_bias_estimator.cpp" />
+    <ClCompile Include="src\imu_data_processor.cpp" />
+    <ClCompile Include="src\imu_sensor.cpp" />
+    <ClCompile Include="xspublic\xscommon\additionalloggerbase.cpp" />
+    <ClCompile Include="xspublic\xscommon\consolelogger.cpp" />
+    <ClCompile Include="xspublic\xscommon\enumexpandersbase.cpp" />
+    <ClCompile Include="xspublic\xscommon\journalexception.cpp" />
+    <ClCompile Include="xspublic\xscommon\journalfile.cpp" />
+    <ClCompile Include="xspublic\xscommon\journaller.cpp" />
+    <ClCompile Include="xspublic\xscommon\journalthreader.cpp" />
+    <ClCompile Include="xspublic\xscommon\stackdumper.cpp" />
+    <ClCompile Include="xspublic\xscommon\stackwalker.cpp" />
+    <ClCompile Include="xspublic\xscommon\threading.cpp" />
+    <ClCompile Include="xspublic\xscommon\xprintf.cpp" />
+    <ClCompile Include="xspublic\xscommon\xsens_threadpool.cpp" />
+    <ClCompile Include="xspublic\xscontroller\broadcastdevice.cpp" />
+    <ClCompile Include="xspublic\xscontroller\callbackmanagerxda.cpp" />
+    <ClCompile Include="xspublic\xscontroller\communicator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\communicatorfactory.cpp" />
+    <ClCompile Include="xspublic\xscontroller\datalogger.cpp" />
+    <ClCompile Include="xspublic\xscontroller\datapacketcache.cpp" />
+    <ClCompile Include="xspublic\xscontroller\dataparser.cpp" />
+    <ClCompile Include="xspublic\xscontroller\datapoller.cpp" />
+    <ClCompile Include="xspublic\xscontroller\devicecommunicator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\devicefactory.cpp" />
+    <ClCompile Include="xspublic\xscontroller\deviceredetector.cpp" />
+    <ClCompile Include="xspublic\xscontroller\dotdevice.cpp" />
+    <ClCompile Include="xspublic\xscontroller\enumerateusbdevices.cpp" />
+    <ClCompile Include="xspublic\xscontroller\enumexpanders.cpp" />
+    <ClCompile Include="xspublic\xscontroller\iointerface.cpp" />
+    <ClCompile Include="xspublic\xscontroller\iointerfacefile.cpp" />
+    <ClCompile Include="xspublic\xscontroller\messageextractor.cpp" />
+    <ClCompile Include="xspublic\xscontroller\messageserializer.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtbdatalogger.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtbfilecommunicator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtdevice.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mti3x0device.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mti6x0device.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mti7_mti8device.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mti8x0device.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mti9x0device.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtibasedevice.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtigdevice.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtix00device.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtix0device.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtixdevice.cpp" />
+    <ClCompile Include="xspublic\xscontroller\mtthread.cpp" />
+    <ClCompile Include="xspublic\xscontroller\nmea_protocolhandler.cpp" />
+    <ClCompile Include="xspublic\xscontroller\packeterrorrateestimator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\packetstamper.cpp" />
+    <ClCompile Include="xspublic\xscontroller\protocolhandler.cpp" />
+    <ClCompile Include="xspublic\xscontroller\protocolmanager.cpp" />
+    <ClCompile Include="xspublic\xscontroller\proxycommunicator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\replymonitor.cpp" />
+    <ClCompile Include="xspublic\xscontroller\replyobject.cpp" />
+    <ClCompile Include="xspublic\xscontroller\restorecommunication.cpp" />
+    <ClCompile Include="xspublic\xscontroller\scanner.cpp" />
+    <ClCompile Include="xspublic\xscontroller\serialcommunicator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\serialinterface.cpp" />
+    <ClCompile Include="xspublic\xscontroller\serialportcommunicator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\streaminterface.cpp" />
+    <ClCompile Include="xspublic\xscontroller\supportedsyncsettings.cpp" />
+    <ClCompile Include="xspublic\xscontroller\synclinegmt.c" />
+    <ClCompile Include="xspublic\xscontroller\synclinemk4.c" />
+    <ClCompile Include="xspublic\xscontroller\udev.cpp" />
+    <ClCompile Include="xspublic\xscontroller\usbcommunicator.cpp" />
+    <ClCompile Include="xspublic\xscontroller\usbinterface.cpp" />
+    <ClCompile Include="xspublic\xscontroller\xdacommunicatorfactory.cpp" />
+    <ClCompile Include="xspublic\xscontroller\xsconnectivitystate.c" />
+    <ClCompile Include="xspublic\xscontroller\xscontrol_def.cpp" />
+    <ClCompile Include="xspublic\xscontroller\xsdef.cpp" />
+    <ClCompile Include="xspublic\xscontroller\xsdeviceconfiguration.c" />
+    <ClCompile Include="xspublic\xscontroller\xsdeviceptrarray.c" />
+    <ClCompile Include="xspublic\xscontroller\xsdevicestate.c" />
+    <ClCompile Include="xspublic\xscontroller\xsdevice_def.cpp" />
+    <ClCompile Include="xspublic\xscontroller\xslibusb.cpp" />
+    <ClCompile Include="xspublic\xscontroller\xsrejectreason.c" />
+    <ClCompile Include="xspublic\xscontroller\xsscanner.cpp" />
+    <ClCompile Include="xspublic\xscontroller\xsusbhubinfo.c" />
+    <ClCompile Include="xspublic\xscontroller\xswinusb.cpp" />
+    <ClCompile Include="xspublic\xstypes\datapacket_p.cpp" />
+    <ClCompile Include="xspublic\xstypes\xsarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsbaud.c" />
+    <ClCompile Include="xspublic\xstypes\xsbytearray.c" />
+    <ClCompile Include="xspublic\xstypes\xscalibrateddata.c" />
+    <ClCompile Include="xspublic\xstypes\xscanoutputconfiguration.c" />
+    <ClCompile Include="xspublic\xstypes\xscanoutputconfigurationarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsdatapacket.cpp" />
+    <ClCompile Include="xspublic\xstypes\xsdatapacketptrarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsdebugcounters.cpp" />
+    <ClCompile Include="xspublic\xstypes\xsdeviceid.c" />
+    <ClCompile Include="xspublic\xstypes\xsdeviceidarray.c" />
+    <ClCompile Include="xspublic\xscommon\xsens_math_throw.cpp" />
+    <ClCompile Include="xspublic\xstypes\xseuler.c" />
+    <ClCompile Include="xspublic\xstypes\xsfile.c" />
+    <ClCompile Include="xspublic\xstypes\xsfilterprofile.c" />
+    <ClCompile Include="xspublic\xstypes\xsfilterprofilearray.c" />
+    <ClCompile Include="xspublic\xstypes\xsglovedata.c" />
+    <ClCompile Include="xspublic\xstypes\xsint64array.c" />
+    <ClCompile Include="xspublic\xstypes\xsintarray.c" />
+    <ClCompile Include="xspublic\xstypes\xslibraryloader.c" />
+    <ClCompile Include="xspublic\xstypes\xsmalloc.c" />
+    <ClCompile Include="xspublic\xstypes\xsmatrix.c" />
+    <ClCompile Include="xspublic\xstypes\xsmatrix3x3.c" />
+    <ClCompile Include="xspublic\xstypes\xsmessage.c" />
+    <ClCompile Include="xspublic\xstypes\xsmessagearray.c" />
+    <ClCompile Include="xspublic\xstypes\xsoutputconfiguration.c" />
+    <ClCompile Include="xspublic\xstypes\xsoutputconfigurationarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsportinfo.c" />
+    <ClCompile Include="xspublic\xstypes\xsportinfoarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsquaternion.c" />
+    <ClCompile Include="xspublic\xstypes\xsquaternionarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsrange.c" />
+    <ClCompile Include="xspublic\xstypes\xsresultvalue.c" />
+    <ClCompile Include="xspublic\xstypes\xsrssi.c" />
+    <ClCompile Include="xspublic\xstypes\xssdidata.c" />
+    <ClCompile Include="xspublic\xstypes\xssensorranges.cpp" />
+    <ClCompile Include="xspublic\xstypes\xssimpleversion.c" />
+    <ClCompile Include="xspublic\xstypes\xssnapshot.c" />
+    <ClCompile Include="xspublic\xstypes\xssocket.c" />
+    <ClCompile Include="xspublic\xstypes\xsstring.c" />
+    <ClCompile Include="xspublic\xstypes\xsstringarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsstringoutputtypearray.c" />
+    <ClCompile Include="xspublic\xstypes\xssyncsetting.c" />
+    <ClCompile Include="xspublic\xstypes\xssyncsettingarray.c" />
+    <ClCompile Include="xspublic\xstypes\xsthread.c" />
+    <ClCompile Include="xspublic\xstypes\xstime.c" />
+    <ClCompile Include="xspublic\xstypes\xstimestamp.c" />
+    <ClCompile Include="xspublic\xstypes\xstriggerindicationdata.c" />
+    <ClCompile Include="xspublic\xstypes\xstypedefs.c" />
+    <ClCompile Include="xspublic\xstypes\xstimeinfo.c" />
+    <ClCompile Include="xspublic\xstypes\xsvector.c" />
+    <ClCompile Include="xspublic\xstypes\xsvector3.c" />
+    <ClCompile Include="xspublic\xstypes\xsversion.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\callback_handler.h" />
+    <ClInclude Include="include\data_logger.h" />
+    <ClInclude Include="include\device_configurator.h" />
+    <ClInclude Include="include\device_scanner.h" />
+    <ClInclude Include="include\gyro_bias_estimator.h" />
+    <ClInclude Include="include\imu_data_processor.h" />
+    <ClInclude Include="include\imu_sensor.h" />
+    <ClInclude Include="xspublic\xscommon\abstractadditionallogger.h" />
+    <ClInclude Include="xspublic\xscommon\additionalloggerbase.h" />
+    <ClInclude Include="xspublic\xscommon\calltracer.h" />
+    <ClInclude Include="xspublic\xscommon\common_qdebug.h" />
+    <ClInclude Include="xspublic\xscommon\xscommon_config.h" />
+    <ClInclude Include="xspublic\xscommon\consolelogger.h" />
+    <ClInclude Include="xspublic\xscommon\enumexpandersbase.h" />
+    <ClInclude Include="xspublic\xscommon\journalexception.h" />
+    <ClInclude Include="xspublic\xscommon\journalfile.h" />
+    <ClInclude Include="xspublic\xscommon\journaller.h" />
+    <ClInclude Include="xspublic\xscommon\journalloglevel.h" />
+    <ClInclude Include="xspublic\xscommon\journalstackwalker.h" />
+    <ClInclude Include="xspublic\xscommon\journalthreader.h" />
+    <ClInclude Include="xspublic\xscommon\stackdumper.h" />
+    <ClInclude Include="xspublic\xscommon\stackwalker.h" />
+    <ClInclude Include="xspublic\xscommon\threading.h" />
+    <ClInclude Include="xspublic\xscommon\xprintf.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_janitors.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_mutex.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_nonintrusive_shared_pointer.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_shared_pointer.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_threadpool.h" />
+    <ClInclude Include="xspublic\xscontroller\broadcastdevice.h" />
+    <ClInclude Include="xspublic\xscontroller\callbackmanagerxda.h" />
+    <ClInclude Include="xspublic\xscontroller\communicator.h" />
+    <ClInclude Include="xspublic\xscontroller\communicatorfactory.h" />
+    <ClInclude Include="xspublic\xscontroller\compat.h" />
+    <ClInclude Include="xspublic\xscontroller\datalogger.h" />
+    <ClInclude Include="xspublic\xscontroller\datapacketcache.h" />
+    <ClInclude Include="xspublic\xscontroller\dataparser.h" />
+    <ClInclude Include="xspublic\xscontroller\datapoller.h" />
+    <ClInclude Include="xspublic\xscontroller\devicecommunicator.h" />
+    <ClInclude Include="xspublic\xscontroller\devicefactory.h" />
+    <ClInclude Include="xspublic\xscontroller\deviceredetector.h" />
+    <ClInclude Include="xspublic\xscontroller\devicetypes.h" />
+    <ClInclude Include="xspublic\xscontroller\dotdevice.h" />
+    <ClInclude Include="xspublic\xscontroller\enumerateusbdevices.h" />
+    <ClInclude Include="xspublic\xscontroller\enumexpanders.h" />
+    <ClInclude Include="xspublic\xscontroller\fileloader.h" />
+    <ClInclude Include="xspublic\xscontroller\gpsstatus.h" />
+    <ClInclude Include="xspublic\xscontroller\idfetchhelpers.h" />
+    <ClInclude Include="xspublic\xscontroller\iointerface.h" />
+    <ClInclude Include="xspublic\xscontroller\iointerfacefile.h" />
+    <ClInclude Include="xspublic\xscontroller\iprotocolhandler.h" />
+    <ClInclude Include="xspublic\xscontroller\iprotocolmanager.h" />
+    <ClInclude Include="xspublic\xscontroller\lastresultmanager.h" />
+    <ClInclude Include="xspublic\xscontroller\messageextractor.h" />
+    <ClInclude Include="xspublic\xscontroller\messagelocation.h" />
+    <ClInclude Include="xspublic\xscontroller\messageserializer.h" />
+    <ClInclude Include="xspublic\xscontroller\mtbdatalogger.h" />
+    <ClInclude Include="xspublic\xscontroller\mtbfilecommunicator.h" />
+    <ClInclude Include="xspublic\xscontroller\mtdevice.h" />
+    <ClInclude Include="xspublic\xscontroller\mti3x0device.h" />
+    <ClInclude Include="xspublic\xscontroller\mti6x0device.h" />
+    <ClInclude Include="xspublic\xscontroller\mti7_mti8device.h" />
+    <ClInclude Include="xspublic\xscontroller\mti8x0device.h" />
+    <ClInclude Include="xspublic\xscontroller\mtibasedevice.h" />
+    <ClInclude Include="xspublic\xscontroller\mtigdevice.h" />
+    <ClInclude Include="xspublic\xscontroller\mtix00device.h" />
+    <ClInclude Include="xspublic\xscontroller\mtix0device.h" />
+    <ClInclude Include="xspublic\xscontroller\mtixdevice.h" />
+    <ClInclude Include="xspublic\xscontroller\mtsyncsettings.h" />
+    <ClInclude Include="xspublic\xscontroller\mtthread.h" />
+    <ClInclude Include="xspublic\xscontroller\nmea_protocolhandler.h" />
+    <ClInclude Include="xspublic\xscontroller\openportstage.h" />
+    <ClInclude Include="xspublic\xscontroller\packeterrorrateestimator.h" />
+    <ClInclude Include="xspublic\xscontroller\packetstamper.h" />
+    <ClInclude Include="xspublic\xscontroller\protocolhandler.h" />
+    <ClInclude Include="xspublic\xscontroller\protocolmanager.h" />
+    <ClInclude Include="xspublic\xscontroller\proxycommunicator.h" />
+    <ClInclude Include="xspublic\xscontroller\rangequeue.h" />
+    <ClInclude Include="xspublic\xscontroller\replymonitor.h" />
+    <ClInclude Include="xspublic\xscontroller\replyobject.h" />
+    <ClInclude Include="xspublic\xscontroller\restorecommunication.h" />
+    <ClInclude Include="xspublic\xscontroller\rx_tx_log.h" />
+    <ClInclude Include="xspublic\xscontroller\scanner.h" />
+    <ClInclude Include="xspublic\xscontroller\scenariomatchpred.h" />
+    <ClInclude Include="xspublic\xscontroller\serialcommunicator.h" />
+    <ClInclude Include="xspublic\xscontroller\serialinterface.h" />
+    <ClInclude Include="xspublic\xscontroller\serialportcommunicator.h" />
+    <ClInclude Include="xspublic\xscontroller\simpleprotocolmanager.h" />
+    <ClInclude Include="xspublic\xscontroller\streaminterface.h" />
+    <ClInclude Include="xspublic\xscontroller\supportedsyncsettings.h" />
+    <ClInclude Include="xspublic\xscontroller\synclinegmt.h" />
+    <ClInclude Include="xspublic\xscontroller\synclinemk4.h" />
+    <ClInclude Include="xspublic\xscontroller\udev.h" />
+    <ClInclude Include="xspublic\xscontroller\usbcommunicator.h" />
+    <ClInclude Include="xspublic\xscontroller\usbinterface.h" />
+    <ClInclude Include="xspublic\xscontroller\xdacommunicatorfactory.h" />
+    <ClInclude Include="xspublic\xscontroller\xsaccesscontrolmode.h" />
+    <ClInclude Include="xspublic\xscontroller\xsalignmentframe.h" />
+    <ClInclude Include="xspublic\xscontroller\xscalibrateddatamode.h" />
+    <ClInclude Include="xspublic\xscontroller\xscallback.h" />
+    <ClInclude Include="xspublic\xscontroller\xscallbackplainc.h" />
+    <ClInclude Include="xspublic\xscontroller\xsconnectivitystate.h" />
+    <ClInclude Include="xspublic\xscontroller\xscontrollerconfig.h" />
+    <ClInclude Include="xspublic\xscontroller\xscontrol_def.h" />
+    <ClInclude Include="xspublic\xscontroller\xscontrol_public.h" />
+    <ClInclude Include="xspublic\xscontroller\xscoordinatesystem.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdef.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdeviceconfiguration.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdeviceoptionflag.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdeviceparameter.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdeviceparameteridentifier.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdeviceptr.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdeviceptrarray.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdeviceptrlist.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdevicestate.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdevice_def.h" />
+    <ClInclude Include="xspublic\xscontroller\xsdevice_public.h" />
+    <ClInclude Include="xspublic\xscontroller\xserrormode.h" />
+    <ClInclude Include="xspublic\xscontroller\xsfloatformat.h" />
+    <ClInclude Include="xspublic\xscontroller\xsgnssplatform.h" />
+    <ClInclude Include="xspublic\xscontroller\xsicccommand.h" />
+    <ClInclude Include="xspublic\xscontroller\xsiccrepmotionresult.h" />
+    <ClInclude Include="xspublic\xscontroller\xslibusb.h" />
+    <ClInclude Include="xspublic\xscontroller\xsnmeastringtype.h" />
+    <ClInclude Include="xspublic\xscontroller\xsoperationalmode.h" />
+    <ClInclude Include="xspublic\xscontroller\xsoption.h" />
+    <ClInclude Include="xspublic\xscontroller\xsorientationmode.h" />
+    <ClInclude Include="xspublic\xscontroller\xsprocessingflag.h" />
+    <ClInclude Include="xspublic\xscontroller\xsprotocoltype.h" />
+    <ClInclude Include="xspublic\xscontroller\xsrejectreason.h" />
+    <ClInclude Include="xspublic\xscontroller\xsresetmethod.h" />
+    <ClInclude Include="xspublic\xscontroller\xsscanner.h" />
+    <ClInclude Include="xspublic\xscontroller\xsselftestresult.h" />
+    <ClInclude Include="xspublic\xscontroller\xsstatusflag.h" />
+    <ClInclude Include="xspublic\xscontroller\xsusbhubinfo.h" />
+    <ClInclude Include="xspublic\xscontroller\xswinusb.h" />
+    <ClInclude Include="xspublic\xstypes\datapacket_p.h" />
+    <ClInclude Include="xspublic\xstypes\pstdint.h" />
+    <ClInclude Include="xspublic\xstypes\resource.h" />
+    <ClInclude Include="xspublic\xstypes\xsanalogindata.h" />
+    <ClInclude Include="xspublic\xstypes\xsarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsbaud.h" />
+    <ClInclude Include="xspublic\xstypes\xsbaudcode.h" />
+    <ClInclude Include="xspublic\xstypes\xsbaudrate.h" />
+    <ClInclude Include="xspublic\xstypes\xsbusid.h" />
+    <ClInclude Include="xspublic\xstypes\xsbytearray.h" />
+    <ClInclude Include="xspublic\xstypes\xscalibrateddata.h" />
+    <ClInclude Include="xspublic\xstypes\xscanbaudcode.h" />
+    <ClInclude Include="xspublic\xstypes\xscandataidentifier.h" />
+    <ClInclude Include="xspublic\xstypes\xscanframeformat.h" />
+    <ClInclude Include="xspublic\xstypes\xscanoutputconfiguration.h" />
+    <ClInclude Include="xspublic\xstypes\xscanoutputconfigurationarray.h" />
+    <ClInclude Include="xspublic\xstypes\xscontrolline.h" />
+    <ClInclude Include="xspublic\xstypes\xscopy.h" />
+    <ClInclude Include="xspublic\xstypes\xsdataidentifier.h" />
+    <ClInclude Include="xspublic\xstypes\xsdataidentifiervalue.h" />
+    <ClInclude Include="xspublic\xstypes\xsdatapacket.h" />
+    <ClInclude Include="xspublic\xstypes\xsdatapacketptr.h" />
+    <ClInclude Include="xspublic\xstypes\xsdatapacketptrarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsdebugcounters.h" />
+    <ClInclude Include="xspublic\xstypes\xsdeviceid.h" />
+    <ClInclude Include="xspublic\xstypes\xsdeviceidarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsdeviceidlist.h" />
+    <ClInclude Include="xspublic\xstypes\xsdid.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_debugtools.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_generic_matrix.h" />
+    <ClInclude Include="xspublic\xscommon\xsens_math_throw.h" />
+    <ClInclude Include="xspublic\xstypes\xseuler.h" />
+    <ClInclude Include="xspublic\xstypes\xsexception.h" />
+    <ClInclude Include="xspublic\xstypes\xsfile.h" />
+    <ClInclude Include="xspublic\xstypes\xsfilepos.h" />
+    <ClInclude Include="xspublic\xstypes\xsfilterprofile.h" />
+    <ClInclude Include="xspublic\xstypes\xsfilterprofilearray.h" />
+    <ClInclude Include="xspublic\xstypes\xsglovedata.h" />
+    <ClInclude Include="xspublic\xstypes\xsglovesnapshot.h" />
+    <ClInclude Include="xspublic\xstypes\xsinforequest.h" />
+    <ClInclude Include="xspublic\xstypes\xsint64array.h" />
+    <ClInclude Include="xspublic\xstypes\xsintarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsintlist.h" />
+    <ClInclude Include="xspublic\xstypes\xslibraryloader.h" />
+    <ClInclude Include="xspublic\xstypes\xsmalloc.h" />
+    <ClInclude Include="xspublic\xstypes\xsmath.h" />
+    <ClInclude Include="xspublic\xstypes\xsmatrix.h" />
+    <ClInclude Include="xspublic\xstypes\xsmatrix3x3.h" />
+    <ClInclude Include="xspublic\xstypes\xsmessage.h" />
+    <ClInclude Include="xspublic\xstypes\xsmessagearray.h" />
+    <ClInclude Include="xspublic\xstypes\xsmessagelist.h" />
+    <ClInclude Include="xspublic\xstypes\xsoutputconfiguration.h" />
+    <ClInclude Include="xspublic\xstypes\xsoutputconfigurationarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsoutputconfigurationlist.h" />
+    <ClInclude Include="xspublic\xstypes\xsplatform.h" />
+    <ClInclude Include="xspublic\xstypes\xsportinfo.h" />
+    <ClInclude Include="xspublic\xstypes\xsportinfoarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsportinfolist.h" />
+    <ClInclude Include="xspublic\xstypes\xspressure.h" />
+    <ClInclude Include="xspublic\xstypes\xsquaternion.h" />
+    <ClInclude Include="xspublic\xstypes\xsquaternionarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsrange.h" />
+    <ClInclude Include="xspublic\xstypes\xsrawgnsspvtdata.h" />
+    <ClInclude Include="xspublic\xstypes\xsrawgnsssatinfo.h" />
+    <ClInclude Include="xspublic\xstypes\xsresultvalue.h" />
+    <ClInclude Include="xspublic\xstypes\xsrssi.h" />
+    <ClInclude Include="xspublic\xstypes\xsscrdata.h" />
+    <ClInclude Include="xspublic\xstypes\xssdidata.h" />
+    <ClInclude Include="xspublic\xstypes\xssensorranges.h" />
+    <ClInclude Include="xspublic\xstypes\xssimpleversion.h" />
+    <ClInclude Include="xspublic\xstypes\xssnapshot.h" />
+    <ClInclude Include="xspublic\xstypes\xssocket.h" />
+    <ClInclude Include="xspublic\xstypes\xsstring.h" />
+    <ClInclude Include="xspublic\xstypes\xsstringarray.h" />
+    <ClInclude Include="xspublic\xstypes\xsstringoutputtype.h" />
+    <ClInclude Include="xspublic\xstypes\xsstringoutputtypearray.h" />
+    <ClInclude Include="xspublic\xstypes\xsstringstreaming.h" />
+    <ClInclude Include="xspublic\xstypes\xssyncfunction.h" />
+    <ClInclude Include="xspublic\xstypes\xssyncline.h" />
+    <ClInclude Include="xspublic\xstypes\xssyncpolarity.h" />
+    <ClInclude Include="xspublic\xstypes\xssyncrole.h" />
+    <ClInclude Include="xspublic\xstypes\xssyncsetting.h" />
+    <ClInclude Include="xspublic\xstypes\xssyncsettingarray.h" />
+    <ClInclude Include="xspublic\xstypes\xssyncsettinglist.h" />
+    <ClInclude Include="xspublic\xstypes\xsthread.h" />
+    <ClInclude Include="xspublic\xstypes\xstime.h" />
+    <ClInclude Include="xspublic\xstypes\xstimestamp.h" />
+    <ClInclude Include="xspublic\xstypes\xstriggerindicationdata.h" />
+    <ClInclude Include="xspublic\xstypes\xstypedefs.h" />
+    <ClInclude Include="xspublic\xstypes\xstypesconfig.h" />
+    <ClInclude Include="xspublic\xstypes\xstypesdynlib.h" />
+    <ClInclude Include="xspublic\xstypes\xstypesinfo.h" />
+    <ClInclude Include="xspublic\xstypes\xsushortvector.h" />
+    <ClInclude Include="xspublic\xstypes\xstimeinfo.h" />
+    <ClInclude Include="xspublic\xstypes\xsvector.h" />
+    <ClInclude Include="xspublic\xstypes\xsvector3.h" />
+    <ClInclude Include="xspublic\xstypes\xsversion.h" />
+    <ClInclude Include="xspublic\xstypes\xsxbusmessageid.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
