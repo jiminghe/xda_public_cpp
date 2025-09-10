@@ -6,6 +6,7 @@
 #include "imu_data_processor.h"
 #include <iostream>
 #include <limits>
+#include <iomanip>
 
 using namespace std;
 
@@ -13,76 +14,101 @@ using namespace std;
 Journaller* gJournal = 0;
 static volatile bool keep_running = true;
 
-
 void printPacketData(const XsDataPacket& packet)
 {
     std::cout << std::setw(5) << std::fixed << std::setprecision(2);
 
+    if (packet.containsUtcTime())
+    {
+        XsTimeInfo utcTime = packet.utcTime();
+
+        // Print UTC time with high precision
+        std::cout << "\r" << "UTC: "
+            << std::setfill('0')
+            << std::setw(4) << utcTime.m_year << "-"
+            << std::setw(2) << static_cast<int>(utcTime.m_month) << "-"
+            << std::setw(2) << static_cast<int>(utcTime.m_day) << " "
+            << std::setw(2) << static_cast<int>(utcTime.m_hour) << ":"
+            << std::setw(2) << static_cast<int>(utcTime.m_minute) << ":"
+            << std::setw(2) << static_cast<int>(utcTime.m_second) << "."
+            << std::setw(6) << (utcTime.m_nano / 1000)  // Convert nanoseconds to microseconds
+            << std::setfill(' ');  // Reset fill character
+
+  // Print validity flags
+        if (utcTime.m_valid & 0x01) std::cout << " [Date Valid]";
+        if (utcTime.m_valid & 0x02) std::cout << " [Time Valid]";
+        if (utcTime.m_valid & 0x04) std::cout << " [Fully Resolved]";
+
+        // Print UTC offset if not zero
+        if (utcTime.m_utcOffset != 0) {
+            std::cout << " (UTC" << std::showpos << utcTime.m_utcOffset << "min" << std::noshowpos << ")";
+        }
+    }
+
     if (packet.containsSampleTimeFine())
-    cout << "\r" << "SampleTimeFine:" << packet.sampleTimeFine();
+        cout  << " |SampleTimeFine:" << packet.sampleTimeFine();
 
     if (packet.containsOrientation())
     {
         XsQuaternion quaternion = packet.orientationQuaternion();
-    // cout << " |q0:" << quaternion.w()
-    //     << ", q1:" << quaternion.x()
-    //     << ", q2:" << quaternion.y()
-    //     << ", q3:" << quaternion.z();
+        // cout << " |q0:" << quaternion.w()
+        //     << ", q1:" << quaternion.x()
+        //     << ", q2:" << quaternion.y()
+        //     << ", q3:" << quaternion.z();
 
-    XsEuler euler = packet.orientationEuler();
-    cout << " |Roll:" << euler.roll()
-    << ", Pitch:" << euler.pitch()
-    << ", Yaw:" << euler.yaw();
+        XsEuler euler = packet.orientationEuler();
+        cout << " |Roll:" << euler.roll()
+            << ", Pitch:" << euler.pitch()
+            << ", Yaw:" << euler.yaw();
     }
 
     if (packet.containsCalibratedData())
     {
         XsVector acc = packet.calibratedAcceleration();
-    cout << " |Acc X:" << acc[0]
-    << ", Acc Y:" << acc[1]
-    << ", Acc Z:" << acc[2];
+        cout << " |Acc X:" << acc[0]
+            << ", Acc Y:" << acc[1]
+            << ", Acc Z:" << acc[2];
 
-    XsVector gyr = packet.calibratedGyroscopeData();
-    cout << " |Gyr X:" << gyr[0]
-    << ", Gyr Y:" << gyr[1]
-    << ", Gyr Z:" << gyr[2];
+        XsVector gyr = packet.calibratedGyroscopeData();
+        cout << " |Gyr X:" << gyr[0]
+            << ", Gyr Y:" << gyr[1]
+            << ", Gyr Z:" << gyr[2];
 
-    XsVector mag = packet.calibratedMagneticField();
-    // cout << " |Mag X:" << mag[0]
-    //     << ", Mag Y:" << mag[1]
-    //     << ", Mag Z:" << mag[2];
+        XsVector mag = packet.calibratedMagneticField();
+        // cout << " |Mag X:" << mag[0]
+        //     << ", Mag Y:" << mag[1]
+        //     << ", Mag Z:" << mag[2];
     }
 
     if (packet.containsLatitudeLongitude())
     {
         XsVector latLon = packet.latitudeLongitude();
-    cout << " |Lat:" << latLon[0]
-    << ", Lon:" << latLon[1];
+        cout << " |Lat:" << latLon[0]
+            << ", Lon:" << latLon[1];
     }
 
     if (packet.containsAltitude())
-    cout << " |Alt:" << packet.altitude();
+        cout << " |Alt:" << packet.altitude();
 
     if (packet.containsVelocity())
     {
         XsVector vel = packet.velocity(XDI_CoordSysEnu);
-    cout << " |E:" << vel[0]
-    << ", N:" << vel[1]
-    << ", U:" << vel[2];
+        cout << " |E:" << vel[0]
+            << ", N:" << vel[1]
+            << ", U:" << vel[2];
     }
 
     std::cout << std::flush;
 }
 
 int main() {
-    
-    
+
     ImuSensor sensor;
-    
+
     // Set up disconnection handling
     sensor.setDisconnectionCallback([]() {
         keep_running = false;
-    });
+        });
 
     if (!sensor.initialize() || !sensor.startLogging()) {
         std::cout << "Failed to initialize sensor" << std::endl;
@@ -103,7 +129,6 @@ int main() {
             if (sensor.hasNewData()) {
                 XsDataPacket packet = sensor.getLatestData();
                 processor.addData(packet);
-
 
                 printPacketData(packet);
 

@@ -3,6 +3,7 @@
 
 #include <xscontroller/xsdevice_def.h>
 #include <xstypes/xsoutputconfigurationarray.h>
+#include <xstypes/xstimeinfo.h>
 #include "gyro_bias_estimator.h"
 #include <memory>
 
@@ -12,9 +13,11 @@ public:
     ~DeviceConfigurator();
     bool configureDevice(XsDevice* device);
     void stopGyroBiasEstimation();
+    bool setUtcTime(XsDevice* device);
 
 private:
     XsOutputConfigurationArray createConfigArray(XsDevice* device);
+    XsTimeInfo getCurrentUtcTime();
     std::unique_ptr<GyroBiasEstimator> m_estimator;
 };
 

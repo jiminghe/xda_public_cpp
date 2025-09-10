@@ -1,11 +1,14 @@
 #include "device_configurator.h"
 #include <iostream>
-#include <chrono>
-#include <thread>
+#include <cstring>
 
-#define GYRO_BIAS_INITIAL_DURATION 5
-#define GYRO_BIAS_INTERVAL 15
-#define GYRO_BIAS_DURATION 3
+// Cross-platform includes for high-resolution time
+#ifdef _WIN32
+    #include <windows.h>
+#else
+    #include <sys/time.h>
+    #include <time.h>
+#endif
 
 DeviceConfigurator::DeviceConfigurator() : m_estimator(nullptr) {}
 
@@ -19,6 +22,88 @@ void DeviceConfigurator::stopGyroBiasEstimation() {
     if (m_estimator) {
         m_estimator->stopPeriodicEstimation();
     }
+}
+
+XsTimeInfo DeviceConfigurator::getCurrentUtcTime() {
+    XsTimeInfo timeInfo;
+    memset(&timeInfo, 0, sizeof(XsTimeInfo));
+
+#ifdef _WIN32
+    // Windows implementation using GetSystemTimeAsFileTime for microsecond precision
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    
+    // Convert FILETIME to SYSTEMTIME
+    SYSTEMTIME st;
+    FileTimeToSystemTime(&ft, &st);
+    
+    // FILETIME is in 100-nanosecond intervals since January 1, 1601
+    ULARGE_INTEGER uli;
+    uli.LowPart = ft.dwLowDateTime;
+    uli.HighPart = ft.dwHighDateTime;
+    
+    // Extract microseconds from the 100-nanosecond precision
+    uint64_t totalHundredNs = uli.QuadPart;
+    uint32_t microSeconds = (totalHundredNs % 10000000ULL) / 10;  // Convert to microseconds
+    uint32_t nanoSeconds = microSeconds * 1000;  // Convert to nanoseconds
+    
+    timeInfo.m_year = st.wYear;
+    timeInfo.m_month = static_cast<uint8_t>(st.wMonth);
+    timeInfo.m_day = static_cast<uint8_t>(st.wDay);
+    timeInfo.m_hour = static_cast<uint8_t>(st.wHour);
+    timeInfo.m_minute = static_cast<uint8_t>(st.wMinute);
+    timeInfo.m_second = static_cast<uint8_t>(st.wSecond);
+    timeInfo.m_nano = nanoSeconds;
+    
+#else
+    // Linux/Unix implementation using clock_gettime for nanosecond precision
+    struct timespec ts;
+    if (clock_gettime(CLOCK_REALTIME, &ts) == 0) {
+        // Convert to UTC time structure
+        struct tm* utc_tm = gmtime(&ts.tv_sec);
+        if (utc_tm != nullptr) {
+            timeInfo.m_year = static_cast<uint16_t>(utc_tm->tm_year + 1900);
+            timeInfo.m_month = static_cast<uint8_t>(utc_tm->tm_mon + 1);
+            timeInfo.m_day = static_cast<uint8_t>(utc_tm->tm_mday);
+            timeInfo.m_hour = static_cast<uint8_t>(utc_tm->tm_hour);
+            timeInfo.m_minute = static_cast<uint8_t>(utc_tm->tm_min);
+            timeInfo.m_second = static_cast<uint8_t>(utc_tm->tm_sec);
+            timeInfo.m_nano = static_cast<uint32_t>(ts.tv_nsec);
+        }
+    }
+#endif
+
+    // Set validity flags (UTC Date valid | UTC Time valid | Time fully resolved)
+    timeInfo.m_valid = 0x01;  // Bits 0, 1, and 2 set
+    timeInfo.m_utcOffset = 0;  // Already UTC time, so offset is 0
+
+    return timeInfo;
+}
+
+bool DeviceConfigurator::setUtcTime(XsDevice* device) {
+    if (!device) {
+        std::cout << "Invalid device pointer for UTC time setting." << std::endl;
+        return false;
+    }
+
+    XsTimeInfo currentTime = getCurrentUtcTime();
+    
+    std::cout << "Setting UTC time on device: " 
+              << static_cast<int>(currentTime.m_year) << "-"
+              << static_cast<int>(currentTime.m_month) << "-"
+              << static_cast<int>(currentTime.m_day) << " "
+              << static_cast<int>(currentTime.m_hour) << ":"
+              << static_cast<int>(currentTime.m_minute) << ":"
+              << static_cast<int>(currentTime.m_second) << "."
+              << (currentTime.m_nano / 1000) << " UTC" << std::endl;
+
+    if (!device->setUtcTime(currentTime)) {
+        std::cout << "Failed to set UTC time on device." << std::endl;
+        return false;
+    }
+
+    std::cout << "UTC time successfully set on device." << std::endl;
+    return true;
 }
 
 bool DeviceConfigurator::configureDevice(XsDevice* device)
@@ -38,29 +123,30 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
         return false;
     }
 
+    // Set UTC time after configuration but before going to measurement mode
+    if (!setUtcTime(device)) {
+        std::cout << "Warning: Could not set UTC time on device." << std::endl;
+        // Continue execution as this is not a critical failure
+    }
+
     std::cout << "Putting device into measurement mode..." << std::endl;
     if (!device->gotoMeasurement()) {
         std::cout << "Could not put device into measurement mode." << std::endl;
         return false;
     }
 
-    //wait for 20ms until sending next command, otherwise the initial gyro bias estimation won't work.
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
-
-
     // Create and store the gyro bias estimator
     m_estimator = std::make_unique<GyroBiasEstimator>(device);
     
     // Perform initial estimation for 6 seconds
-    std::cout << "Performing initial gyro bias estimation for "<< GYRO_BIAS_INITIAL_DURATION <<" seconds..." << std::endl;
-    if (!m_estimator->performSingleEstimation(GYRO_BIAS_INITIAL_DURATION)) {
+    std::cout << "Performing initial gyro bias estimation for 6 seconds..." << std::endl;
+    if (!m_estimator->performSingleEstimation(6)) {
         std::cout << "Initial gyro bias estimation failed." << std::endl;
         return false;
     }
 
-    // Start periodic estimation (every GYRO_BIAS_INTERVAL seconds with GYRO_BIAS_DURATION seconds duration)
-    std::cout << "Start Periodic estimation with interval: " << GYRO_BIAS_INTERVAL << "s, duration: " << GYRO_BIAS_DURATION << "s." << std::endl;
-    m_estimator->startPeriodicEstimation(GYRO_BIAS_INTERVAL, GYRO_BIAS_DURATION);
+    // Start periodic estimation (every 15 seconds with 3 seconds duration)
+    m_estimator->startPeriodicEstimation(15, 3);
 
     return true;
 }
@@ -70,6 +156,8 @@ XsOutputConfigurationArray DeviceConfigurator::createConfigArray(XsDevice* devic
     XsOutputConfigurationArray configArray;
     configArray.push_back(XsOutputConfiguration(XDI_PacketCounter, 0));
     configArray.push_back(XsOutputConfiguration(XDI_SampleTimeFine, 0));
+    configArray.push_back(XsOutputConfiguration(XDI_UtcTime, 0));
+
 
     if (device->deviceId().isImu()) {
         configArray.push_back(XsOutputConfiguration(XDI_Acceleration, 100));
