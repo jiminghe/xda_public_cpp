@@ -34,7 +34,7 @@ void printPacketData(const XsDataPacket& packet)
             << std::setw(6) << (utcTime.m_nano / 1000)  // Convert nanoseconds to microseconds
             << std::setfill(' ');  // Reset fill character
 
-  // Print validity flags
+        // Print validity flags
         if (utcTime.m_valid & 0x01) std::cout << " [Date Valid]";
         if (utcTime.m_valid & 0x02) std::cout << " [Time Valid]";
         if (utcTime.m_valid & 0x04) std::cout << " [Fully Resolved]";
@@ -108,10 +108,16 @@ int main() {
     // Set up disconnection handling
     sensor.setDisconnectionCallback([]() {
         keep_running = false;
-        });
+    });
 
-    if (!sensor.initialize() || !sensor.startLogging()) {
+    if (!sensor.initialize()) {
         std::cout << "Failed to initialize sensor" << std::endl;
+        return -1;
+    }
+
+    // Create and start logging to .mtb file
+    if (!sensor.startLogging()) {
+        std::cout << "Failed to create log file" << std::endl;
         return -1;
     }
 
@@ -159,7 +165,12 @@ int main() {
     }
 
     sensor.stopMeasurement();
-    sensor.stopLogging();
+    
+    // Stop and close the log file
+    std::cout << "\nStopping recording and closing log file..." << std::endl;
+    if (!sensor.stopLogging()) {
+        std::cerr << "Warning: Failed to properly close log file" << std::endl;
+    }
 
     std::cout << "\nProgram terminated" << std::endl;
     return 0;
