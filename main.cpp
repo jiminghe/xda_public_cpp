@@ -115,14 +115,13 @@ int main() {
         return -1;
     }
 
-    // Create and start logging to .mtb file
-    if (!sensor.startLogging()) {
-        std::cout << "Failed to create log file" << std::endl;
-        return -1;
-    }
-
     ImuDataProcessor processor;
     sensor.startMeasurement();
+
+    //Start gyro bias estimation after data is flowing
+    if (!sensor.startGyroBiasEstimation()) {
+        std::cout << "Warning: Failed to start gyro bias estimation" << std::endl;
+    }
 
     // Main loop
     while (keep_running) {

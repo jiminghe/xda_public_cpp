@@ -14,21 +14,37 @@ bool DataLogger::createLogFile(XsDevice* device)
     std::string logFileName = generateLogFileName(device_code_id);
     std::cout << "Creating a log file..." << std::endl;
     if (device->createLogFile(logFileName) != XRV_OK) {
+        std::cout << "Failed to create log file." << std::endl;
         return false;
     }
-    else {
-        std::cout << "Created a log file: " << logFileName.c_str() << std::endl;
-    }
+    std::cout << "Created a log file: " << logFileName.c_str() << std::endl;
+    return true;
+}
+
+bool DataLogger::startRecording(XsDevice* device)
+{
     std::cout << "Starting recording..." << std::endl;
-    return device->startRecording();
+    if (!device->startRecording()) {
+        std::cout << "Failed to start recording." << std::endl;
+        return false;
+    }
+    return true;
 }
 
 bool DataLogger::stopAndCloseLog(XsDevice* device)
 {
+    std::cout << "Stopping recording..." << std::endl;
     if (!device->stopRecording()) {
+        std::cout << "Failed to stop recording." << std::endl;
         return false;
     }
-    return device->closeLogFile();
+    
+    std::cout << "Closing log file..." << std::endl;
+    if (!device->closeLogFile()) {
+        std::cout << "Failed to close log file." << std::endl;
+        return false;
+    }
+    return true;
 }
 
 std::string DataLogger::generateLogFileName(const std::string& productCode)

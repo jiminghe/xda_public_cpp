@@ -14,6 +14,7 @@ public:
     ~ImuSensor();
 
     bool initialize();
+    bool startGyroBiasEstimation(); 
     bool startLogging();
     bool stopLogging();
     bool hasNewData() const;

@@ -5,6 +5,7 @@
 #include <xstypes/xsoutputconfigurationarray.h>
 #include <xstypes/xstimeinfo.h>
 #include "gyro_bias_estimator.h"
+#include "data_logger.h"
 #include <memory>
 
 class DeviceConfigurator {
@@ -14,6 +15,7 @@ public:
     bool configureDevice(XsDevice* device);
     void stopGyroBiasEstimation();
     bool setUtcTime(XsDevice* device);
+    bool startGyroBiasEstimation(); 
 
 private:
     XsOutputConfigurationArray createConfigArray(XsDevice* device);

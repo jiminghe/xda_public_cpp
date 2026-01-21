@@ -115,19 +115,32 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
     }
 
     std::cout << "Configuring the device..." << std::endl;
-    device->readEmtsAndDeviceConfiguration();
     XsOutputConfigurationArray configArray = createConfigArray(device);
-    
+
     if (!device->setOutputConfiguration(configArray)) {
         std::cout << "Could not configure MTi device." << std::endl;
         return false;
     }
 
-    // Set UTC time after configuration but before going to measurement mode
+    XsTime::msleep(100);
+
+    // Set UTC time after configuration but before creating log file
     if (!setUtcTime(device)) {
         std::cout << "Warning: Could not set UTC time on device." << std::endl;
-        // Continue execution as this is not a critical failure
     }
+
+    XsTime::msleep(100);
+
+    //read config before create log file, otherwise the log file will use the old settings.
+    device->readEmtsAndDeviceConfiguration();
+    XsTime::msleep(200);
+
+    // Create log file BEFORE going to measurement mode
+    if (!DataLogger::createLogFile(device)) {
+        return false;
+    }
+
+    XsTime::msleep(100);
 
     std::cout << "Putting device into measurement mode..." << std::endl;
     if (!device->gotoMeasurement()) {
@@ -135,18 +148,17 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
         return false;
     }
 
-    // Create and store the gyro bias estimator
-    m_estimator = std::make_unique<GyroBiasEstimator>(device);
-    
-    // Perform initial estimation for 6 seconds
-    std::cout << "Performing initial gyro bias estimation for 6 seconds..." << std::endl;
-    if (!m_estimator->performSingleEstimation(6)) {
-        std::cout << "Initial gyro bias estimation failed." << std::endl;
+    XsTime::msleep(100);
+
+    // Start recording AFTER going to measurement mode
+    if (!DataLogger::startRecording(device)) {
         return false;
     }
 
-    // Start periodic estimation (every 15 seconds with 3 seconds duration)
-    m_estimator->startPeriodicEstimation(15, 3);
+    XsTime::msleep(100);
+
+    // Create the gyro bias estimator but DON'T run initial estimation yet
+    m_estimator = std::make_unique<GyroBiasEstimator>(device);
 
     return true;
 }
@@ -170,6 +182,9 @@ XsOutputConfigurationArray DeviceConfigurator::createConfigArray(XsDevice* devic
         configArray.push_back(XsOutputConfiguration(XDI_Acceleration, 100));
         configArray.push_back(XsOutputConfiguration(XDI_RateOfTurn, 100));
         configArray.push_back(XsOutputConfiguration(XDI_MagneticField, 100));
+        // Baro output: MTi-600 series, MTi-100 series, MTi-7/8, Sirius series.
+        // configArray.push_back(XsOutputConfiguration(XDI_BaroPressure, 100));
+        configArray.push_back(XsOutputConfiguration(XDI_Temperature, 100));
         // configArray.push_back(XsOutputConfiguration(XDI_AccelerationHR, 0xFFFF));
         // configArray.push_back(XsOutputConfiguration(XDI_RateOfTurnHR, 0xFFFF));
     }
@@ -187,4 +202,22 @@ XsOutputConfigurationArray DeviceConfigurator::createConfigArray(XsDevice* devic
     configArray.push_back(XsOutputConfiguration(XDI_StatusWord, 0));
 
     return configArray;
+}
+
+bool DeviceConfigurator::startGyroBiasEstimation() {
+    if (!m_estimator) {
+        std::cout << "Gyro bias estimator not initialized." << std::endl;
+        return false;
+    }
+
+    // Perform initial estimation
+    std::cout << "Performing initial gyro bias estimation for 6 seconds..." << std::endl;
+    if (!m_estimator->performSingleEstimation(6)) {
+        std::cout << "Initial gyro bias estimation failed." << std::endl;
+        return false;
+    }
+
+    // Start periodic estimation
+    m_estimator->startPeriodicEstimation(15, 3);
+    return true;
 }

@@ -40,7 +40,7 @@ bool ImuSensor::initialize()
     // Add callback handler
     device->addCallbackHandler(m_callback.get());
 
-    // Configure device
+    // Configure device (this includes readEmtsAndDeviceConfiguration)
     if (!m_configurator->configureDevice(device)) {
         std::cout << "Failed to configure device" << std::endl;
         return false;
@@ -123,4 +123,11 @@ void ImuSensor::handleError(XsDevice* device, XsResultValue error)
             std::cout << XsResultValue_toString(error) << ", change your baudrate to higher value! " << std::endl;
         }
     }
+}
+
+bool ImuSensor::startGyroBiasEstimation() {
+    if (m_configurator) {
+        return m_configurator->startGyroBiasEstimation();
+    }
+    return false;
 }
