@@ -40,8 +40,13 @@ bool ImuSensor::initialize()
     // Add callback handler
     device->addCallbackHandler(m_callback.get());
 
-    // Configure device (this includes readEmtsAndDeviceConfiguration)
-    if (!m_configurator->configureDevice(device)) {
+    // Get setOutputConfig setting from config handler
+    bool setOutputConfig = m_deviceScanner->getConfig().getSetOutputConfig();
+    std::cout << "Output configuration will be " 
+              << (setOutputConfig ? "SET" : "SKIPPED") << std::endl;
+
+    // Configure device with the setOutputConfig parameter
+    if (!m_configurator->configureDevice(device, setOutputConfig)) {
         std::cout << "Failed to configure device" << std::endl;
         return false;
     }

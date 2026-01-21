@@ -195,6 +195,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\callback_handler.cpp" />
+    <ClCompile Include="src\config_handler.cpp" />
     <ClCompile Include="src\data_logger.cpp" />
     <ClCompile Include="src\device_configurator.cpp" />
     <ClCompile Include="src\device_scanner.cpp" />
@@ -335,6 +336,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\callback_handler.h" />
+    <ClInclude Include="include\config_handler.h" />
     <ClInclude Include="include\data_logger.h" />
     <ClInclude Include="include\device_configurator.h" />
     <ClInclude Include="include\device_scanner.h" />

@@ -106,7 +106,7 @@ bool DeviceConfigurator::setUtcTime(XsDevice* device) {
     return true;
 }
 
-bool DeviceConfigurator::configureDevice(XsDevice* device)
+bool DeviceConfigurator::configureDevice(XsDevice* device, bool setOutputConfig)
 {
     std::cout << "Putting device into configuration mode..." << std::endl;
     if (!device->gotoConfig()) {
@@ -114,15 +114,19 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
         return false;
     }
 
-    std::cout << "Configuring the device..." << std::endl;
-    XsOutputConfigurationArray configArray = createConfigArray(device);
+    if (setOutputConfig) {
+        std::cout << "Configuring the device output..." << std::endl;
+        XsOutputConfigurationArray configArray = createConfigArray(device);
 
-    if (!device->setOutputConfiguration(configArray)) {
-        std::cout << "Could not configure MTi device." << std::endl;
-        return false;
+        if (!device->setOutputConfiguration(configArray)) {
+            std::cout << "Could not configure MTi device." << std::endl;
+            return false;
+        }
+
+        XsTime::msleep(100);
+    } else {
+        std::cout << "Skipping output configuration (setOutputConfig=0)" << std::endl;
     }
-
-    XsTime::msleep(100);
 
     // Set UTC time after configuration but before creating log file
     if (!setUtcTime(device)) {

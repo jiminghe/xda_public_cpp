@@ -450,6 +450,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\config_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xspublic\xscommon\abstractadditionallogger.h">
@@ -1152,6 +1155,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\imu_sensor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\config_handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

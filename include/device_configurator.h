@@ -12,7 +12,7 @@ class DeviceConfigurator {
 public:
     DeviceConfigurator();
     ~DeviceConfigurator();
-    bool configureDevice(XsDevice* device);
+    bool configureDevice(XsDevice* device, bool setOutputConfig = true);
     void stopGyroBiasEstimation();
     bool setUtcTime(XsDevice* device);
     bool startGyroBiasEstimation(); 
