@@ -110,8 +110,8 @@ int main() {
     std::unique_ptr<PeriodicRequestScheduler> scheduler;
     if (sensor1.isSendLatestEnabled()) {
         scheduler = std::make_unique<PeriodicRequestScheduler>();
-        scheduler->registerDevice(sensor1.getDevice());
-        scheduler->registerDevice(sensor2.getDevice());
+        sensor1.registerWithScheduler(*scheduler);
+        sensor2.registerWithScheduler(*scheduler);
         scheduler->start(RequestRate::Hz1);
     }
 

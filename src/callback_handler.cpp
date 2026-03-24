@@ -31,8 +31,12 @@ TimestampedPacket CallbackHandler::getNextPacket()
 
 void CallbackHandler::onLiveDataAvailable(XsDevice* device, const XsDataPacket* packet)
 {
-    // Capture UTC wall-clock time as early as possible
-    const uint64_t receiveTimeNs = TimestampedPacket::now();
+    // Use the batch timestamp set by PeriodicRequestScheduler (same value for all
+    // devices triggered together). Fall back to clock_gettime() in continuous mode.
+    uint64_t receiveTimeNs = m_batchTimestamp.exchange(0);
+    if (receiveTimeNs == 0) {
+        receiveTimeNs = TimestampedPacket::now();
+    }
 
     xsens::Lock locky(&m_mutex);
     assert(packet != 0);

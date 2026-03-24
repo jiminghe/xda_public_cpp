@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project supports connecting and running multiple MTi sensors simultaneously on a single host. All sensors share one `XsControl` instance, are configured independently, and are driven by a single `PeriodicRequestScheduler` that fires `requestData()` to every sensor at the same moment — ensuring synchronized data delivery.
+This project supports connecting and running multiple MTi sensors simultaneously on a single host. All sensors share one `XsControl` instance, are configured independently, and are driven by a single `PeriodicRequestScheduler` that fires `requestData()` to every sensor at the same moment — ensuring synchronized data delivery with identical UTC timestamps.
 
 ---
 
@@ -79,11 +79,13 @@ sensor1.startMeasurement();
 sensor2.startMeasurement();
 
 // 5. Single scheduler fires requestData() to both sensors simultaneously
+//    registerWithScheduler() passes both the XsDevice* and the internal
+//    CallbackHandler* so all devices share one batch timestamp per period.
 std::unique_ptr<PeriodicRequestScheduler> scheduler;
 if (sensor1.isSendLatestEnabled()) {
     scheduler = std::make_unique<PeriodicRequestScheduler>();
-    scheduler->registerDevice(sensor1.getDevice());
-    scheduler->registerDevice(sensor2.getDevice());
+    sensor1.registerWithScheduler(*scheduler);
+    sensor2.registerWithScheduler(*scheduler);
     scheduler->start(RequestRate::Hz1);
 }
 
@@ -137,9 +139,9 @@ sensor2.startMeasurement();
 sensor3.startMeasurement();
 
 PeriodicRequestScheduler scheduler;
-scheduler.registerDevice(sensor1.getDevice());
-scheduler.registerDevice(sensor2.getDevice());
-scheduler.registerDevice(sensor3.getDevice());
+sensor1.registerWithScheduler(scheduler);
+sensor2.registerWithScheduler(scheduler);
+sensor3.registerWithScheduler(scheduler);
 scheduler.start(RequestRate::Hz50);
 ```
 
@@ -154,7 +156,35 @@ DeviceID:0388000C |UtcTime:1774325614.123456 |SampleTimeFine:4837345 |Roll:-115.
 DeviceID:0388000D |UtcTime:1774325614.123789 |SampleTimeFine:4837346 |Roll:2.14, Pitch:0.87, Yaw:45.00 |Acc X:-0.01, Acc Y:0.02, Acc Z:9.80 |Gyr X:0.01, Gyr Y:0.00, Gyr Z:0.00
 ```
 
-The two `UtcTime` values will be within microseconds of each other since the scheduler fires `requestData()` to all devices in the same loop iteration.
+The two `UtcTime` values will be identical (same nanosecond) because they share one batch timestamp captured before any `requestData()` call is issued (see Batch Timestamp below).
+
+---
+
+## Batch Timestamp — Why UTC Times Are Identical
+
+The SDK processes callbacks from multiple serial ports **sequentially**, not in parallel. Without special handling, `onLiveDataAvailable` fires for sensor1 and then ~10 ms later for sensor2. Each callback capturing its own `clock_gettime()` would produce timestamps ~10 ms apart.
+
+The fix is a shared **batch timestamp**:
+
+```
+schedulerLoop (once per period):
+  1. clock_gettime(CLOCK_REALTIME) → batchTimestamp
+  2. store batchTimestamp in m_batchTimestamp (atomic)
+  3. notify_all() → wake all worker threads
+
+workerLoop (one per device, simultaneously woken):
+  1. handler->setBatchTimestamp(m_batchTimestamp)
+  2. device->requestData()
+
+onLiveDataAvailable (called by SDK, sequentially):
+  1. receiveTimeNs = m_batchTimestamp.exchange(0)  // consume pre-set value
+  2. if receiveTimeNs == 0: fallback to clock_gettime()  // continuous mode
+  3. store receiveTimeNs in TimestampedPacket
+```
+
+All devices in the same scheduler tick share the same `batchTimestamp`, so their `TimestampedPacket::receiveTimeNs` (and thus `utcTimeString()`) values are identical regardless of SDK callback ordering.
+
+Use `sensor.registerWithScheduler(scheduler)` (not `scheduler.registerDevice(sensor.getDevice())`) because the scheduler needs the internal `CallbackHandler*` pointer to call `setBatchTimestamp()`. `registerWithScheduler` is the only method that has access to both.
 
 ---
 
@@ -173,7 +203,8 @@ The two `UtcTime` values will be within microseconds of each other since the sch
 
 | File                               | Role                                                               |
 |------------------------------------|--------------------------------------------------------------------|
-| `include/imu_sensor.h`             | `ImuSensor(XsControl*, int)` constructor for shared-control sensors |
+| `include/imu_sensor.h`             | `ImuSensor(XsControl*, int)` and `registerWithScheduler()`        |
 | `include/device_scanner.h/cpp`     | `preScan()`, `DeviceScanner(XsControl*, int)` constructor          |
-| `include/periodic_request_scheduler.h/cpp` | Simultaneous `requestData()` to all registered devices     |
-| `include/timestamped_packet.h`     | `deviceId` field populated at receipt in `onLiveDataAvailable`     |
+| `include/periodic_request_scheduler.h/cpp` | Batch timestamp + simultaneous `requestData()` to all devices |
+| `include/callback_handler.h/cpp`   | `setBatchTimestamp()` / `m_batchTimestamp` consumed in `onLiveDataAvailable` |
+| `include/timestamped_packet.h`     | `deviceId` and `receiveTimeNs` fields, `utcTimeString()`           |

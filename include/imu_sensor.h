@@ -8,6 +8,7 @@
 #include "device_scanner.h"
 #include "data_logger.h"
 #include "device_configurator.h"
+#include "periodic_request_scheduler.h"
 
 class ImuSensor {
 public:
@@ -32,6 +33,12 @@ public:
     
     void startMeasurement();
     void stopMeasurement();
+
+    // Register this sensor with a shared scheduler (passes device + internal callback handler)
+    void registerWithScheduler(PeriodicRequestScheduler& scheduler) {
+        if (getDevice() && m_callback)
+            scheduler.registerDevice(getDevice(), m_callback.get());
+    }
     
     XsDevice* getDevice() const { return m_deviceScanner ? m_deviceScanner->getDevice() : nullptr; }
     XsControl* getControl() const { return m_deviceScanner ? m_deviceScanner->getControl() : nullptr; }
