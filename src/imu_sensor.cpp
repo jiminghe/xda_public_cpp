@@ -6,7 +6,16 @@ ImuSensor::ImuSensor()
     , m_callback(std::make_unique<CallbackHandler>())
     , m_configurator(std::make_unique<DeviceConfigurator>())
 {
-    // Set up error callback
+    m_callback->setErrorCallback([this](XsDevice* dev, XsResultValue error) {
+        this->handleError(dev, error);
+    });
+}
+
+ImuSensor::ImuSensor(XsControl* sharedControl, int deviceIndex)
+    : m_deviceScanner(std::make_unique<DeviceScanner>(sharedControl, deviceIndex))
+    , m_callback(std::make_unique<CallbackHandler>())
+    , m_configurator(std::make_unique<DeviceConfigurator>())
+{
     m_callback->setErrorCallback([this](XsDevice* dev, XsResultValue error) {
         this->handleError(dev, error);
     });

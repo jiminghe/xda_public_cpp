@@ -1,4 +1,5 @@
 #include "callback_handler.h"
+#include <xscontroller/xsdevice_def.h>
 #include <cassert>
 #include <iostream>
 
@@ -28,7 +29,7 @@ TimestampedPacket CallbackHandler::getNextPacket()
     return oldest;
 }
 
-void CallbackHandler::onLiveDataAvailable(XsDevice*, const XsDataPacket* packet)
+void CallbackHandler::onLiveDataAvailable(XsDevice* device, const XsDataPacket* packet)
 {
     // Capture UTC wall-clock time as early as possible
     const uint64_t receiveTimeNs = TimestampedPacket::now();
@@ -41,6 +42,7 @@ void CallbackHandler::onLiveDataAvailable(XsDevice*, const XsDataPacket* packet)
     TimestampedPacket tp;
     tp.packet        = *packet;
     tp.receiveTimeNs = receiveTimeNs;
+    tp.deviceId      = device ? device->deviceId().toString().toStdString() : "unknown";
     m_packetBuffer.push_back(tp);
     ++m_numberOfPacketsInBuffer;
     assert(m_numberOfPacketsInBuffer <= m_maxNumberOfPacketsInBuffer);

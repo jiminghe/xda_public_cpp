@@ -6,47 +6,62 @@
 #include <linux/serial.h>
 #include <iostream>
 
-DeviceScanner::DeviceScanner() : m_control(nullptr), m_device(nullptr)
+DeviceScanner::DeviceScanner()
+    : m_control(XsControl::construct())
+    , m_device(nullptr)
+    , m_deviceIndex(0)
+    , m_ownsControl(true)
 {
-    m_control = XsControl::construct();
+    preScan();
+}
+
+DeviceScanner::DeviceScanner(XsControl* sharedControl, int deviceIndex)
+    : m_control(sharedControl)
+    , m_device(nullptr)
+    , m_deviceIndex(deviceIndex)
+    , m_ownsControl(false)
+{
+    preScan();
 }
 
 DeviceScanner::~DeviceScanner()
 {
     if (m_control) {
         m_control->closePort(m_portInfo.portName().toStdString());
-        m_control->destruct();
+        if (m_ownsControl) {
+            m_control->destruct();
+        }
     }
 }
 
 
-bool DeviceScanner::scanAndConnect()
+void DeviceScanner::preScan()
 {
-    std::cout << "Scanning for devices..." << std::endl;
+    // Scan is done here (in the constructor) so all sensors scan before any port is opened.
+    // If sensor2 scanned inside initialize(), sensor1's port would already be open
+    // and the scanner would not find it, leaving only one visible device.
     XsPortInfoArray portInfoArray = XsScanner::scanPorts();
-
-    // First attempt: scan all ports
-    for (auto const &portInfo : portInfoArray)
+    int found = 0;
+    for (auto const& portInfo : portInfoArray)
     {
         if (portInfo.deviceId().isMti() || portInfo.deviceId().isMtig())
         {
-            m_portInfo = portInfo;
-            break;
+            if (found == m_deviceIndex) {
+                m_portInfo = portInfo;
+                return;
+            }
+            ++found;
         }
     }
+    std::cout << "Warning: no MTi device found at index " << m_deviceIndex
+              << " during pre-scan (" << found << " device(s) visible)." << std::endl;
+}
 
-    // If first attempt failed, try specific port scan
+bool DeviceScanner::scanAndConnect()
+{
     if (m_portInfo.empty()) {
-        std::cout << "No MTi device found in initial scan, trying specific port scan..." << std::endl;
-
-        //change this port name and baudrate to your own port and baudrate(by default it is 115200, unless you had changed the value with MT Manager.)
-        m_portInfo = XsScanner::scanPort("/dev/ttyUSB0", XBR_115k2); 
-        
-        // If still empty after specific scan
-        if (m_portInfo.empty()) {
-            std::cout << "No MTi device found on any port." << std::endl;
-            return false;
-        }
+        std::cout << "No MTi device found at index " << m_deviceIndex << "." << std::endl;
+        return false;
     }
 
     std::cout << "Found a device with ID: " << m_portInfo.deviceId().toString().toStdString()

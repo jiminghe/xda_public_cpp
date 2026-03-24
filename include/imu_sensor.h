@@ -11,7 +11,13 @@
 
 class ImuSensor {
 public:
+    // Single-sensor: creates its own XsControl, connects to the first MTi device found
     ImuSensor();
+
+    // Multi-sensor: uses a shared XsControl from another ImuSensor, connects to device at deviceIndex
+    // Pass sensor1.getControl() as sharedControl for sensor2, sensor3, etc.
+    ImuSensor(XsControl* sharedControl, int deviceIndex);
+
     ~ImuSensor();
 
     // Call before initialize(). Enables XSF_SendLatest sync mode + PeriodicRequestScheduler. Default: true.

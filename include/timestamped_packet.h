@@ -11,6 +11,7 @@
 struct TimestampedPacket {
     XsDataPacket packet;
     uint64_t     receiveTimeNs{0};  // CLOCK_REALTIME nanoseconds at moment of receipt
+    std::string  deviceId;          // device ID string captured at receipt
 
     // Format as "seconds.microseconds" (e.g. 1774325614.123456)
     std::string utcTimeString() const

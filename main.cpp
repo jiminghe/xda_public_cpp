@@ -21,7 +21,7 @@ void printPacketData(const TimestampedPacket& tp)
     const XsDataPacket& packet = tp.packet;
     std::cout << std::setw(5) << std::fixed << std::setprecision(2);
 
-    cout << "\r" << "UtcTime:" << tp.utcTimeString();
+    cout << "\r" << "DeviceID:" << tp.deviceId << " |UtcTime:" << tp.utcTimeString();
 
     if (packet.containsSampleTimeFine())
         cout << " |SampleTimeFine:" << packet.sampleTimeFine();
@@ -80,63 +80,60 @@ void printPacketData(const TimestampedPacket& tp)
 }
 
 int main() {
-    
-    
-    ImuSensor sensor;
-    sensor.setSendLatestEnabled(false); 
-    
-    // Set up disconnection handling
-    sensor.setDisconnectionCallback([]() {
-        keep_running = false;
-    });
 
-    if (!sensor.initialize() || !sensor.startLogging()) {
-        std::cout << "Failed to initialize sensor" << std::endl;
+    // sensor1 creates and owns the XsControl.
+    // sensor2 shares sensor1's XsControl and connects to the second MTi device found.
+    ImuSensor sensor1;
+    ImuSensor sensor2(sensor1.getControl(), 1);
+
+    sensor1.setSendLatestEnabled(true);
+    sensor2.setSendLatestEnabled(true);
+
+    sensor1.setDisconnectionCallback([]() { keep_running = false; });
+    sensor2.setDisconnectionCallback([]() { keep_running = false; });
+
+    if (!sensor1.initialize() || !sensor1.startLogging()) {
+        std::cout << "Failed to initialize sensor1" << std::endl;
+        return -1;
+    }
+    if (!sensor2.initialize() || !sensor2.startLogging()) {
+        std::cout << "Failed to initialize sensor2" << std::endl;
         return -1;
     }
 
-    ImuDataProcessor processor;
-    sensor.startMeasurement();
+    ImuDataProcessor processor1;
+    ImuDataProcessor processor2;
+    sensor1.startMeasurement();
+    sensor2.startMeasurement();
 
-    // PeriodicRequestScheduler is only needed in send_latest mode.
-    // In continuous mode the device streams data automatically.
+    // Single scheduler fires requestData() to both sensors simultaneously at 1 Hz
     std::unique_ptr<PeriodicRequestScheduler> scheduler;
-    if (sensor.isSendLatestEnabled()) {
+    if (sensor1.isSendLatestEnabled()) {
         scheduler = std::make_unique<PeriodicRequestScheduler>();
-        scheduler->registerDevice(sensor.getDevice());
+        scheduler->registerDevice(sensor1.getDevice());
+        scheduler->registerDevice(sensor2.getDevice());
         scheduler->start(RequestRate::Hz1);
     }
 
     // Main loop
     while (keep_running) {
-        if (!sensor.isConnected()) {
-            std::cout << "Device no longer connected!" << std::endl;
+        if (!sensor1.isConnected() || !sensor2.isConnected()) {
+            std::cout << "A device disconnected!" << std::endl;
             break;
         }
 
         try {
-            if (sensor.hasNewData()) {
-                TimestampedPacket tp = sensor.getLatestData();
-                processor.addData(tp);
-
+            if (sensor1.hasNewData()) {
+                TimestampedPacket tp = sensor1.getLatestData();
+                processor1.addData(tp);
                 printPacketData(tp);
-
-                //check if manual gyro bias estimation is working
-                // if (packet.containsStatus())
-                // {
-                //     uint32_t status = packet.status();
-                //     uint32_t no_rotation_update = (status >> 3) & 0x3;
-                //     std::cout << "no_rotation_update_status = " << no_rotation_update << std::endl;
-                // }
-
-                static int counter = 0;
-                if (++counter % 100 == 0) {
-                    XsVector avgAcc = processor.getAverageAcceleration();
-                    std::cout << "Average acceleration (10s): "
-                              << avgAcc[0] << ", " 
-                              << avgAcc[1] << ", " 
-                              << avgAcc[2] << std::endl;
-                }
+                std::cout << std::endl;
+            }
+            if (sensor2.hasNewData()) {
+                TimestampedPacket tp = sensor2.getLatestData();
+                processor2.addData(tp);
+                printPacketData(tp);
+                std::cout << std::endl;
             }
         }
         catch (const std::exception& e) {
@@ -147,11 +144,11 @@ int main() {
         XsTime::msleep(1);
     }
 
-    if (scheduler) {
-        scheduler->stop();
-    }
-    sensor.stopMeasurement();
-    sensor.stopLogging();
+    if (scheduler) scheduler->stop();
+    sensor1.stopMeasurement();
+    sensor2.stopMeasurement();
+    sensor1.stopLogging();
+    sensor2.stopLogging();
 
     std::cout << "\nProgram terminated" << std::endl;
     return 0;
