@@ -1,4 +1,5 @@
 #include "device_configurator.h"
+#include <xstypes/xssyncsettingarray.h>
 #include <iostream>
 
 DeviceConfigurator::DeviceConfigurator() : m_estimator(nullptr) {}
@@ -25,10 +26,19 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
 
     std::cout << "Configuring the device..." << std::endl;
     device->readEmtsAndDeviceConfiguration();
+
+    // Query product code while still in config mode
+    m_productCode = device->productCode().toStdString();
+
     XsOutputConfigurationArray configArray = createConfigArray(device);
     
     if (!device->setOutputConfiguration(configArray)) {
         std::cout << "Could not configure MTi device." << std::endl;
+        return false;
+    }
+
+    if (!configureSyncSendLatest(device)) {
+        std::cout << "Could not configure sync SendLatest." << std::endl;
         return false;
     }
 
@@ -51,6 +61,33 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
     // Start periodic estimation (every 15 seconds with 3 seconds duration)
     m_estimator->startPeriodicEstimation(15, 3);
 
+    return true;
+}
+
+bool DeviceConfigurator::configureSyncSendLatest(XsDevice* device)
+{
+    // XSL_ReqData: serial sync line triggered by XMID_ReqData message (Mk4)
+    // XSF_SendLatest: on trigger, transmit the latest sampled packet
+    // Device must already be in config mode when this is called.
+    XsSyncSettingArray syncSettings;
+    syncSettings.push_back(XsSyncSetting(
+        XSL_ReqData,        // line:        serial ReqData trigger
+        XSF_SendLatest,     // function:    send latest sample on trigger
+        XSP_RisingEdge,     // polarity:    (unused for serial line, kept as default)
+        1000,               // pulseWidth:  1 ms (unused for serial line)
+        0,                  // offset:      no delay
+        0,                  // skipFirst:   no frames skipped before first action
+        0,                  // skipFactor:  act on every trigger
+        0,                  // clockPeriod: not used (ClockBiasEstimation only)
+        0                   // triggerOnce: repeat on every trigger
+    ));
+
+    if (!device->setSyncSettings(syncSettings)) {
+        std::cout << "Could not set sync settings (SendLatest / ReqData)." << std::endl;
+        return false;
+    }
+
+    std::cout << "Sync configured: XSL_ReqData + XSF_SendLatest (send_latest mode)." << std::endl;
     return true;
 }
 

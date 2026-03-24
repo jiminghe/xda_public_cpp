@@ -4,6 +4,8 @@
 #include "data_logger.h"
 #include "imu_sensor.h"
 #include "imu_data_processor.h"
+#include "periodic_request_scheduler.h"
+#include "timestamped_packet.h"
 #include <iostream>
 #include <limits>
 
@@ -14,12 +16,15 @@ Journaller* gJournal = 0;
 static volatile bool keep_running = true;
 
 
-void printPacketData(const XsDataPacket& packet)
+void printPacketData(const TimestampedPacket& tp)
 {
+    const XsDataPacket& packet = tp.packet;
     std::cout << std::setw(5) << std::fixed << std::setprecision(2);
 
+    cout << "\r" << "UtcTime:" << tp.utcTimeString();
+
     if (packet.containsSampleTimeFine())
-        cout << "\r" << "SampleTimeFine:" << packet.sampleTimeFine();
+        cout << " |SampleTimeFine:" << packet.sampleTimeFine();
 
     if (packet.containsOrientation())
     {
@@ -92,6 +97,12 @@ int main() {
     ImuDataProcessor processor;
     sensor.startMeasurement();
 
+    // Start the periodic request scheduler — triggers requestData() on the device
+    // at a fixed rate so it transmits the latest packet (XSF_SendLatest mode).
+    PeriodicRequestScheduler scheduler;
+    scheduler.registerDevice(sensor.getDevice());
+    scheduler.start(RequestRate::Hz1);
+
     // Main loop
     while (keep_running) {
         if (!sensor.isConnected()) {
@@ -101,11 +112,10 @@ int main() {
 
         try {
             if (sensor.hasNewData()) {
-                XsDataPacket packet = sensor.getLatestData();
-                processor.addData(packet);
+                TimestampedPacket tp = sensor.getLatestData();
+                processor.addData(tp);
 
-
-                printPacketData(packet);
+                printPacketData(tp);
 
                 //check if manual gyro bias estimation is working
                 // if (packet.containsStatus())
@@ -133,6 +143,7 @@ int main() {
         XsTime::msleep(1);
     }
 
+    scheduler.stop();
     sensor.stopMeasurement();
     sensor.stopLogging();
 

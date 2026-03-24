@@ -18,24 +18,30 @@ bool CallbackHandler::packetAvailable() const
     return m_numberOfPacketsInBuffer > 0;
 }
 
-XsDataPacket CallbackHandler::getNextPacket()
+TimestampedPacket CallbackHandler::getNextPacket()
 {
     assert(packetAvailable());
     xsens::Lock locky(&m_mutex);
-    XsDataPacket oldestPacket(m_packetBuffer.front());
+    TimestampedPacket oldest(m_packetBuffer.front());
     m_packetBuffer.pop_front();
     --m_numberOfPacketsInBuffer;
-    return oldestPacket;
+    return oldest;
 }
 
 void CallbackHandler::onLiveDataAvailable(XsDevice*, const XsDataPacket* packet)
 {
+    // Capture UTC wall-clock time as early as possible
+    const uint64_t receiveTimeNs = TimestampedPacket::now();
+
     xsens::Lock locky(&m_mutex);
     assert(packet != 0);
     while (m_numberOfPacketsInBuffer >= m_maxNumberOfPacketsInBuffer)
         (void)getNextPacket();
 
-    m_packetBuffer.push_back(*packet);
+    TimestampedPacket tp;
+    tp.packet        = *packet;
+    tp.receiveTimeNs = receiveTimeNs;
+    m_packetBuffer.push_back(tp);
     ++m_numberOfPacketsInBuffer;
     assert(m_numberOfPacketsInBuffer <= m_maxNumberOfPacketsInBuffer);
 }

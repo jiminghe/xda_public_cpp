@@ -69,4 +69,5 @@ target_link_libraries(
     xstypes
     pthread
     dl
+    rt
 )

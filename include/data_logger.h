@@ -6,7 +6,7 @@
 
 class DataLogger {
 public:
-    static bool createLogFile(XsDevice* device);
+    static bool createLogFile(XsDevice* device, const std::string& productCode);
     static bool stopAndCloseLog(XsDevice* device);
 private:
     static std::string generateLogFileName(const std::string& productCode);

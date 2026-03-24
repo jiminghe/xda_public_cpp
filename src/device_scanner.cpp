@@ -1,5 +1,9 @@
 #include "device_scanner.h"
 #include <xscontroller/xsscanner.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <linux/serial.h>
 #include <iostream>
 
 DeviceScanner::DeviceScanner() : m_control(nullptr), m_device(nullptr)
@@ -45,9 +49,11 @@ bool DeviceScanner::scanAndConnect()
         }
     }
 
-    std::cout << "Found a device with ID: " << m_portInfo.deviceId().toString().toStdString() 
-              << " @ port: " << m_portInfo.portName().toStdString() 
+    std::cout << "Found a device with ID: " << m_portInfo.deviceId().toString().toStdString()
+              << " @ port: " << m_portInfo.portName().toStdString()
               << ", baudrate: " << m_portInfo.baudrate() << std::endl;
+
+    setLowLatency(m_portInfo.portName().toStdString());
 
     if (!m_control->openPort(m_portInfo.portName().toStdString(), m_portInfo.baudrate())) {
         std::cout << "Could not open port." << std::endl;
@@ -61,4 +67,31 @@ bool DeviceScanner::scanAndConnect()
     }
 
     return true;
+}
+
+void DeviceScanner::setLowLatency(const std::string& portName)
+{
+    int fd = open(portName.c_str(), O_RDWR | O_NONBLOCK | O_NOCTTY);
+    if (fd < 0) {
+        std::cout << "setLowLatency: could not open " << portName << std::endl;
+        return;
+    }
+
+    struct serial_struct ser;
+    if (ioctl(fd, TIOCGSERIAL, &ser) < 0) {
+        std::cout << "setLowLatency: TIOCGSERIAL failed on " << portName << std::endl;
+        close(fd);
+        return;
+    }
+
+    ser.flags |= ASYNC_LOW_LATENCY;
+
+    if (ioctl(fd, TIOCSSERIAL, &ser) < 0) {
+        std::cout << "setLowLatency: TIOCSSERIAL failed on " << portName
+                  << " (try running as root or with CAP_SYS_ADMIN)" << std::endl;
+    } else {
+        std::cout << "Low latency mode enabled on " << portName << std::endl;
+    }
+
+    close(fd);
 }

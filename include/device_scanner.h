@@ -18,6 +18,8 @@ private:
     XsControl* m_control;
     XsDevice* m_device;
     XsPortInfo m_portInfo;
+
+    static void setLowLatency(const std::string& portName);
 };
 
 #endif

@@ -5,11 +5,10 @@
 #include <algorithm>
 #include <iostream>
 
-bool DataLogger::createLogFile(XsDevice* device)
+bool DataLogger::createLogFile(XsDevice* device, const std::string& productCode)
 {
-    std::string device_product_code = device->shortProductCode().toStdString();
     std::string device_id = device->deviceId().toString().toStdString();
-    std::string device_code_id = device_product_code + "_" + device_id;
+    std::string device_code_id = productCode + "_" + device_id;
 
     std::string logFileName = generateLogFileName(device_code_id);
     std::cout << "Creating a log file..." << std::endl;

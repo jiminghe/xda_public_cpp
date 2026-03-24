@@ -57,7 +57,7 @@ bool ImuSensor::startLogging()
         return false;
     }
 
-    return DataLogger::createLogFile(device);
+    return DataLogger::createLogFile(device, m_configurator->productCode());
 }
 
 bool ImuSensor::stopLogging()
@@ -75,7 +75,7 @@ bool ImuSensor::hasNewData() const
     return m_callback->packetAvailable();
 }
 
-XsDataPacket ImuSensor::getLatestData()
+TimestampedPacket ImuSensor::getLatestData()
 {
     return m_callback->getNextPacket();
 }

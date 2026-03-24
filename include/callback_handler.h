@@ -2,10 +2,10 @@
 #define CALLBACK_HANDLER_H
 
 #include <xscontroller/xscallback.h>
-#include <xstypes/xsdatapacket.h>
 #include <xscommon/xsens_mutex.h>
 #include <list>
 #include <functional>
+#include "timestamped_packet.h"
 
 class CallbackHandler : public XsCallback {
 public:
@@ -16,7 +16,7 @@ public:
     virtual ~CallbackHandler() throw();
 
     bool packetAvailable() const;
-    XsDataPacket getNextPacket();
+    TimestampedPacket getNextPacket();
 
     // Set callback for error handling
     void setErrorCallback(ErrorCallback callback) {
@@ -31,7 +31,7 @@ private:
     mutable xsens::Mutex m_mutex;
     size_t m_maxNumberOfPacketsInBuffer;
     size_t m_numberOfPacketsInBuffer;
-    std::list<XsDataPacket> m_packetBuffer;
+    std::list<TimestampedPacket> m_packetBuffer;
     ErrorCallback m_errorCallback;
 };
 

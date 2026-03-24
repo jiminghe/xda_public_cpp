@@ -4,6 +4,7 @@
 #include <memory>
 #include <atomic>
 #include "callback_handler.h"
+#include "timestamped_packet.h"
 #include "device_scanner.h"
 #include "data_logger.h"
 #include "device_configurator.h"
@@ -17,7 +18,7 @@ public:
     bool startLogging();
     bool stopLogging();
     bool hasNewData() const;
-    XsDataPacket getLatestData();
+    TimestampedPacket getLatestData();
     
     void startMeasurement();
     void stopMeasurement();
