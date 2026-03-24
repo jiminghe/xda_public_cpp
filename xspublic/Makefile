@@ -3,15 +3,15 @@ OBJLIBS	= libxscontroller libxscommon libxstypes
 all : $(OBJLIBS)
 
 libxscontroller : libxscommon
-	$(MAKE) -C xscontroller $(MFLAGS)
+	$(MAKE) -C xscontroller
 
 libxscommon : libxstypes
-	$(MAKE) -C xscommon $(MFLAGS)
+	$(MAKE) -C xscommon
 
 libxstypes :
-	$(MAKE) -C xstypes $(MFLAGS) libxstypes.a
+	$(MAKE) -C xstypes libxstypes.a
 
 clean :
-	-$(MAKE) -C xscontroller $(MFLAGS) clean
-	-$(MAKE) -C xscommon $(MFLAGS) clean
-	-$(MAKE) -C xstypes $(MFLAGS) clean
+	-$(MAKE) -C xscontroller clean
+	-$(MAKE) -C xscommon clean
+	-$(MAKE) -C xstypes clean
