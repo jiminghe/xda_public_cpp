@@ -6,7 +6,7 @@ By default, an MTi device in measurement mode continuously streams data at the c
 
 This is useful when:
 - You need a precise, software-controlled output rate independent of the device's internal sample rate.
-- You are running multiple sensors and need them to deliver data at the same moment.
+- You are running multiple sensors and need them to deliver data at the same moment with identical UTC timestamps.
 - You want to reduce USB/serial bus traffic by pulling data at a lower rate than the internal sample rate.
 
 ---
@@ -54,7 +54,7 @@ device->requestData();  // device transmits one packet
 
 ## PeriodicRequestScheduler
 
-`PeriodicRequestScheduler` (`include/periodic_request_scheduler.h`) manages a single high-accuracy background thread that calls `requestData()` on all registered devices simultaneously at a fixed rate.
+`PeriodicRequestScheduler` (`include/periodic_request_scheduler.h`) manages one high-accuracy background thread (the scheduler) and one worker thread per device. The scheduler fires all workers simultaneously at a fixed rate; each worker calls `requestData()` on its device immediately.
 
 ### Supported Rates
 
@@ -76,20 +76,47 @@ enum class RequestRate {
 
 The scheduler uses `clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, ...)` with absolute deadlines. Each wake-up advances the deadline by exactly one period, so timing error does not accumulate over time. If a deadline is missed (overrun), the deadline is reset to `now + period` to prevent a burst of back-to-back requests.
 
+### Batch Timestamp
+
+The SDK processes callbacks from multiple serial ports **sequentially**, not in parallel. Without special handling, `onLiveDataAvailable` would fire for sensor1 and then ~10 ms later for sensor2, producing timestamps ~10 ms apart.
+
+To fix this, the scheduler captures one `CLOCK_REALTIME` timestamp immediately before waking the worker threads. Each worker pushes this shared timestamp into its device's `CallbackHandler` via `setBatchTimestamp()` before calling `requestData()`. When `onLiveDataAvailable` fires, it consumes the pre-set timestamp instead of calling `clock_gettime()` — so all devices in the same batch get an identical `receiveTimeNs`.
+
+```
+schedulerLoop (once per period):
+  1. clock_gettime(CLOCK_REALTIME) → batchTimestamp
+  2. store batchTimestamp atomically
+  3. notify_all() → wake all worker threads
+
+workerLoop (one per device, simultaneously woken):
+  1. handler->setBatchTimestamp(batchTimestamp)
+  2. device->requestData()
+
+onLiveDataAvailable (SDK callback, sequential):
+  1. receiveTimeNs = m_batchTimestamp.exchange(0)  // consume pre-set value
+  2. if receiveTimeNs == 0: fallback to clock_gettime()  // continuous mode
+  3. store receiveTimeNs in TimestampedPacket
+```
+
 ### API
 
 ```cpp
 PeriodicRequestScheduler scheduler;
 
-scheduler.registerDevice(device);       // add a device
-scheduler.unregisterDevice(device);     // remove a device (safe at any time)
+// Always use registerWithScheduler() — it passes both XsDevice* and the
+// internal CallbackHandler* needed for the batch timestamp mechanism.
+sensor.registerWithScheduler(scheduler);
+
+scheduler.unregisterDevice(device);     // remove a device
 
 scheduler.start(RequestRate::Hz50);     // start firing at 50 Hz
-scheduler.stop();                       // stop the scheduler thread
+scheduler.stop();                       // stop all threads
 
 scheduler.isRunning();                  // bool
 scheduler.getRate();                    // RequestRate
 ```
+
+> **Note:** Do not call `scheduler.registerDevice(sensor.getDevice())` directly — this bypasses the `CallbackHandler*` and breaks the batch timestamp. Always use `sensor.registerWithScheduler(scheduler)`.
 
 ---
 
@@ -125,7 +152,7 @@ sensor.startMeasurement();
 std::unique_ptr<PeriodicRequestScheduler> scheduler;
 if (sensor.isSendLatestEnabled()) {
     scheduler = std::make_unique<PeriodicRequestScheduler>();
-    scheduler->registerDevice(sensor.getDevice());
+    sensor.registerWithScheduler(*scheduler);
     scheduler->start(RequestRate::Hz50);
 }
 
@@ -161,27 +188,53 @@ sensor.stopMeasurement();
 sensor.stopLogging();
 ```
 
+### Clearing Sync Settings Directly
+
+If you need to clear sync settings without going through `ImuSensor` (e.g. in a standalone script or a one-off reset), put the device into configuration mode first and pass an empty `XsSyncSettingArray`:
+
+```cpp
+// device must be in configuration mode
+device->gotoConfig();
+
+if (device->setSyncSettings(XsSyncSettingArray())) {
+    std::cout << "Sync settings cleared." << std::endl;
+} else {
+    std::cout << "Warning: could not clear sync settings." << std::endl;
+}
+
+device->gotoMeasurement();
+```
+
+This is exactly what `DeviceConfigurator::configureDevice()` does internally when `setSendLatestEnabled(false)` is set. Passing an empty array overwrites whatever sync configuration the device currently holds — including any `XSL_ReqData + XSF_SendLatest` settings left by a previous run.
+
+> **Why this matters:** If a process exits without clearing sync settings, the device retains them across power cycles. The next session will start in Send Latest mode even if the new application does not call `requestData()`, causing the device to appear silent. Always call `setSendLatestEnabled(false)` (or clear directly as above) when switching back to continuous streaming.
+
 ---
 
 ## Multi-Sensor Synchronized Example
 
-A single `PeriodicRequestScheduler` fires `requestData()` to all sensors in the same loop iteration, so all sensors deliver their latest packet at the same moment.
+A single `PeriodicRequestScheduler` fires `requestData()` to all sensors simultaneously via per-device worker threads. All sensors share one batch timestamp, so their `UtcTime` values are identical.
+
+See [multiple_sensors_guide.md](multiple_sensors_guide.md) for the full two- and three-sensor setup including shared `XsControl` and pre-scan requirements.
 
 ```cpp
-ImuSensor sensor1, sensor2, sensor3;
+ImuSensor sensor1;
+ImuSensor sensor2(sensor1.getControl(), 1);
+ImuSensor sensor3(sensor1.getControl(), 2);
 
 sensor1.setSendLatestEnabled(true);
 sensor2.setSendLatestEnabled(true);
 sensor3.setSendLatestEnabled(true);
 
+// Construct all sensors before calling initialize() (pre-scan requirement)
 sensor1.initialize();
 sensor2.initialize();
 sensor3.initialize();
 
 PeriodicRequestScheduler scheduler;
-scheduler.registerDevice(sensor1.getDevice());
-scheduler.registerDevice(sensor2.getDevice());
-scheduler.registerDevice(sensor3.getDevice());
+sensor1.registerWithScheduler(scheduler);
+sensor2.registerWithScheduler(scheduler);
+sensor3.registerWithScheduler(scheduler);
 scheduler.start(RequestRate::Hz50);  // all 3 sensors triggered together at 50 Hz
 
 // Main loop — collect from each sensor independently
@@ -198,7 +251,7 @@ scheduler.stop();
 
 ## UTC Timestamps
 
-Every packet is stamped at the earliest point in `CallbackHandler::onLiveDataAvailable()` using `CLOCK_REALTIME` before the mutex is acquired. The timestamp is stored in `TimestampedPacket::receiveTimeNs` (nanoseconds since Unix epoch) and formatted via `utcTimeString()`:
+Every packet is stamped using `CLOCK_REALTIME`. In Send Latest mode the timestamp is captured once by the scheduler before any `requestData()` call (batch timestamp). In continuous mode it is captured at the top of `onLiveDataAvailable()`. The timestamp is stored in `TimestampedPacket::receiveTimeNs` (nanoseconds since Unix epoch) and formatted via `utcTimeString()`:
 
 ```
 UtcTime:1774325614.123456 |SampleTimeFine:4837345 |Roll:-115.23, Pitch:-72.58, Yaw:-0.03
@@ -208,6 +261,7 @@ UtcTime:1774325614.123456 |SampleTimeFine:4837345 |Roll:-115.23, Pitch:-72.58, Y
 struct TimestampedPacket {
     XsDataPacket packet;
     uint64_t     receiveTimeNs;   // CLOCK_REALTIME nanoseconds
+    std::string  deviceId;        // from device->deviceId().toString()
 
     std::string utcTimeString();  // returns "seconds.microseconds"
     static uint64_t now();        // current CLOCK_REALTIME in nanoseconds
@@ -218,12 +272,13 @@ struct TimestampedPacket {
 
 ## File Reference
 
-| File                                    | Role                                                        |
-|-----------------------------------------|-------------------------------------------------------------|
-| `include/device_configurator.h/cpp`     | `configureSyncSendLatest()`, `setSendLatestEnabled(bool)`   |
-| `include/periodic_request_scheduler.h/cpp` | High-accuracy `requestData()` scheduler                  |
-| `include/timestamped_packet.h`          | `TimestampedPacket` struct with UTC timestamp              |
-| `include/imu_sensor.h`                  | `setSendLatestEnabled(bool)`, `isSendLatestEnabled()`      |
-| `xspublic/xstypes/xssyncline.h`         | `XSL_ReqData` definition                                   |
-| `xspublic/xstypes/xssyncfunction.h`     | `XSF_SendLatest` definition                                |
-| `xspublic/xstypes/xssyncsetting.h`      | `XsSyncSetting` struct                                     |
+| File                                    | Role                                                              |
+|-----------------------------------------|-------------------------------------------------------------------|
+| `include/device_configurator.h/cpp`     | `configureSyncSendLatest()`, `setSendLatestEnabled(bool)`         |
+| `include/periodic_request_scheduler.h/cpp` | Batch timestamp + high-accuracy `requestData()` scheduler      |
+| `include/callback_handler.h/cpp`        | `setBatchTimestamp()` / `m_batchTimestamp` consumed in callback   |
+| `include/timestamped_packet.h`          | `TimestampedPacket` struct with UTC timestamp and device ID       |
+| `include/imu_sensor.h`                  | `setSendLatestEnabled()`, `registerWithScheduler()`               |
+| `xspublic/xstypes/xssyncline.h`         | `XSL_ReqData` definition                                          |
+| `xspublic/xstypes/xssyncfunction.h`     | `XSF_SendLatest` definition                                       |
+| `xspublic/xstypes/xssyncsetting.h`      | `XsSyncSetting` struct                                            |
