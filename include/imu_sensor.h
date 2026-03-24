@@ -14,6 +14,10 @@ public:
     ImuSensor();
     ~ImuSensor();
 
+    // Call before initialize(). Enables XSF_SendLatest sync mode + PeriodicRequestScheduler. Default: true.
+    void setSendLatestEnabled(bool enable) { m_configurator->setSendLatestEnabled(enable); }
+    bool isSendLatestEnabled() const { return m_configurator->isSendLatestEnabled(); }
+
     bool initialize();
     bool startLogging();
     bool stopLogging();

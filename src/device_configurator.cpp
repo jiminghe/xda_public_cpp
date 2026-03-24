@@ -37,9 +37,18 @@ bool DeviceConfigurator::configureDevice(XsDevice* device)
         return false;
     }
 
-    if (!configureSyncSendLatest(device)) {
-        std::cout << "Could not configure sync SendLatest." << std::endl;
-        return false;
+    if (m_sendLatestEnabled) {
+        if (!configureSyncSendLatest(device)) {
+            std::cout << "Could not configure sync SendLatest." << std::endl;
+            return false;
+        }
+    } else {
+        // Clear any sync settings left from a previous run (e.g. a prior SendLatest session)
+        if (!device->setSyncSettings(XsSyncSettingArray())) {
+            std::cout << "Warning: could not clear sync settings." << std::endl;
+        } else {
+            std::cout << "Sync settings cleared (continuous streaming mode)." << std::endl;
+        }
     }
 
     std::cout << "Putting device into measurement mode..." << std::endl;

@@ -24,10 +24,15 @@ public:
     // Product code queried during configureDevice() while in config mode
     const std::string& productCode() const { return m_productCode; }
 
+    // Enable/disable XSL_ReqData + XSF_SendLatest sync configuration (default: true)
+    void setSendLatestEnabled(bool enable) { m_sendLatestEnabled = enable; }
+    bool isSendLatestEnabled() const { return m_sendLatestEnabled; }
+
 private:
     XsOutputConfigurationArray createConfigArray(XsDevice* device);
     std::unique_ptr<GyroBiasEstimator> m_estimator;
     std::string m_productCode;
+    bool m_sendLatestEnabled{true};
 };
 
 #endif

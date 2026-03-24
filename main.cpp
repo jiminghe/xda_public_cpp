@@ -83,6 +83,7 @@ int main() {
     
     
     ImuSensor sensor;
+    sensor.setSendLatestEnabled(false); 
     
     // Set up disconnection handling
     sensor.setDisconnectionCallback([]() {
@@ -97,11 +98,14 @@ int main() {
     ImuDataProcessor processor;
     sensor.startMeasurement();
 
-    // Start the periodic request scheduler — triggers requestData() on the device
-    // at a fixed rate so it transmits the latest packet (XSF_SendLatest mode).
-    PeriodicRequestScheduler scheduler;
-    scheduler.registerDevice(sensor.getDevice());
-    scheduler.start(RequestRate::Hz1);
+    // PeriodicRequestScheduler is only needed in send_latest mode.
+    // In continuous mode the device streams data automatically.
+    std::unique_ptr<PeriodicRequestScheduler> scheduler;
+    if (sensor.isSendLatestEnabled()) {
+        scheduler = std::make_unique<PeriodicRequestScheduler>();
+        scheduler->registerDevice(sensor.getDevice());
+        scheduler->start(RequestRate::Hz1);
+    }
 
     // Main loop
     while (keep_running) {
@@ -143,7 +147,9 @@ int main() {
         XsTime::msleep(1);
     }
 
-    scheduler.stop();
+    if (scheduler) {
+        scheduler->stop();
+    }
     sensor.stopMeasurement();
     sensor.stopLogging();
 
