@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -107,7 +75,7 @@ static int expectedMessageSize(const unsigned char* buffer, int sz)
 		if (sz < 6)
 			return XS_EXTLENCODE + XS_LEN_MSGEXTHEADERCS;	// typical minimum size at which point extended size is needed
 
-		return XS_LEN_MSGEXTHEADERCS + (int)(((uint32_t) hdr->m_datlen.m_extended.m_length.m_high * 256 + (uint32_t) hdr->m_datlen.m_extended.m_length.m_low));
+		return XS_LEN_MSGEXTHEADERCS + ((uint16_t)(hdr->m_payload[0] << 8) | hdr->m_payload[1]);
 	}
 	return XS_LEN_MSGHEADERCS + (int)(hdr->m_length);
 }
@@ -131,10 +99,9 @@ inline std::string dumpBuffer(const uint8_t* buff, XsSize sz)
 
 /*! \copydoc IProtocolHandler::findMessage
 */
-MessageLocation ProtocolHandler::findMessage(XsProtocolType& type, const XsByteArray& raw) const
+MessageLocation ProtocolHandler::findMessage(const XsByteArray& raw) const
 {
 	JLTRACEG("Entry");
-	type = static_cast<XsProtocolType>(ProtocolHandler::type());
 	MessageLocation rv;
 
 	int bufferSize = (int)raw.size();
@@ -142,6 +109,7 @@ MessageLocation ProtocolHandler::findMessage(XsProtocolType& type, const XsByteA
 		return rv;
 
 	const unsigned char* buffer = raw.data();
+	bool firstMsgChecksumFailed = false;
 
 	// loop through the buffer to find a preamble
 	for (int pre = 0; pre < bufferSize; ++pre)
@@ -182,7 +150,7 @@ MessageLocation ProtocolHandler::findMessage(XsProtocolType& type, const XsByteA
 			if (!m_ignoreMaxMsgSize && target > (XS_LEN_MSGEXTHEADERCS + XS_MAXDATALEN))
 			{
 				// skip current preamble
-				JLALERTG("Invalid message length: " << target);
+				JLTRACEG("Skipping because of invalid message length: " << target);
 				continue;
 			}
 
@@ -203,6 +171,22 @@ MessageLocation ProtocolHandler::findMessage(XsProtocolType& type, const XsByteA
 			// and check the checksum
 			if (rcv.loadFromString(msgStart, (uint16_t)target))
 			{
+				if (pre > 0 && buffer[0] == XS_PREAMBLE && !firstMsgChecksumFailed)
+				{
+					if (pre + target + 1 >= bufferSize)
+					{
+						// We can't do a sanity check if this is a valid message, so do NOT skip anything yet
+						// Also, we're now at the end of the buffer so we can return
+						break;
+					}
+					if (msgStart[target] != XS_PREAMBLE)
+					{
+						// The symbol following the message is not a valid message start, we don't skip anything until we find a sequence of valid messages
+						// or if we know that the first found message can't be valid
+						continue;
+					}
+				}
+
 				JLTRACEG("OK, size = " << (int) rcv.getTotalMessageSize() << " buffer: " << dumpBuffer(msgStart, target));
 				rv.m_size = (int) rcv.getTotalMessageSize();
 				rv.m_startPos = pre;
@@ -215,6 +199,8 @@ MessageLocation ProtocolHandler::findMessage(XsProtocolType& type, const XsByteA
 #endif
 				break;
 			}
+			if (pre == 0)
+				firstMsgChecksumFailed = true;
 
 			// Only alert the checksum error if this is not an embedded message
 			if (rv.m_incompletePos == -1)
@@ -284,7 +270,7 @@ int ProtocolHandler::composeMessage(XsByteArray& raw, const XsMessage& msg)
 	return (int) raw.size();
 }
 
-int ProtocolHandler::type() const
+XsProtocolType ProtocolHandler::type() const
 {
 	return XPT_Xbus;
 }

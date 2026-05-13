@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -88,6 +56,7 @@ XSTYPES_DLL_API void XsFilterProfile_swap(struct XsFilterProfile* a, struct XsFi
 #define XS_LEN_FILTERPROFILELABEL_TERM	(20+1)
 #define XS_LEN_FILTERPROFILEKIND_TERM	(20+1)
 #define XS_MAX_FILTERPROFILES_IN_MT		5
+#define XS_MAX_FILTERPROFILELABEL_SIZE	(1 + 2 * XS_LEN_FILTERPROFILELABEL_TERM)	//!< The maximum size of the label (2 names, including the separator)
 
 struct XsFilterProfile
 {
@@ -133,7 +102,7 @@ struct XsFilterProfile
 		\returns true if the filter profile is empty
 		\sa XsFilterProfile_empty
 	*/
-	inline bool empty()
+	inline bool empty() const
 	{
 		return (0 != XsFilterProfile_empty(this));
 	}
@@ -142,7 +111,7 @@ struct XsFilterProfile
 		\returns a string representation of this filter profile
 		\sa XsFilterProfile_toString
 	*/
-	inline XsString toString()
+	inline XsString toString() const
 	{
 		XsString out;
 		XsFilterProfile_toString(this, &out);
@@ -267,14 +236,14 @@ struct XsFilterProfile
 
 	/*! \brief Swap the contents with \a other
 	*/
-	inline void swap(XsFilterProfile& other)
+	inline void swap(XsFilterProfile& other) noexcept
 	{
 		XsFilterProfile_swap(this, &other);
 	}
 
 	/*! \brief Swap the contents of \a first with \a second
 	*/
-	friend void swap(XsFilterProfile& first, XsFilterProfile& second)
+	friend void swap(XsFilterProfile& first, XsFilterProfile& second) noexcept
 	{
 		first.swap(second);
 	}
@@ -284,14 +253,13 @@ struct XsFilterProfile
 	{
 		return m_filterMajor == other.m_filterMajor && m_filterMinor == other.m_filterMinor;
 	}
-
 protected:
 #endif
 
 	uint8_t m_type;								//!< The type of the filter profile. When set to 255 in an operation, the 'current' filter profile is used.
 	uint8_t m_version;							//!< The version of the filter profile.
 	char m_kind[XS_LEN_FILTERPROFILEKIND_TERM];	//!< The kind of filter profile.
-	char m_label[1 + 2 * XS_LEN_FILTERPROFILELABEL_TERM];	//!< The label of the filter profile (Can be 2 names, including separator)
+	char m_label[XS_MAX_FILTERPROFILELABEL_SIZE]; //!< The label of the filter profile (Can be 2 names, including separator)
 	char m_filterType;							//!< The type of the XKF filter this filter profile is intended for '3': XKF-3, '6': XKF-6. \note The value is a character, so XKF-3 is '3', which is hex 0x33
 	uint8_t m_filterMajor;						//!< The major version of the XKF filter this filter profile is intended for
 	uint8_t m_filterMinor;						//!< The minor version of the XKF filter this filter profile is intended for

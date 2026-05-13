@@ -1,5 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -30,37 +30,12 @@
 //  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
 //  
 
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
+#ifdef _WIN32
+	#ifndef WIN32_LEAN_AND_MEAN
+	#define WIN32_LEAN_AND_MEAN
+	#endif
+	#include <Windows.h>
+#endif
 
 #include "threading.h"
 #include <signal.h>
@@ -92,14 +67,14 @@ StandardThread::StandardThread()
 	, m_stop(false)
 	, m_yieldOnZeroSleep(true)
 #ifdef _WIN32
-	, m_stopHandle(::CreateEvent(NULL, TRUE, FALSE, NULL))
-	, m_running(::CreateEvent(NULL, TRUE, FALSE, NULL))
+	, m_stopHandle(::CreateEvent(nullptr, TRUE, FALSE, nullptr))
+	, m_running(::CreateEvent(nullptr, TRUE, FALSE, nullptr))
 	, m_threadId(0)
 #else
 	, m_running(false)
 	, m_finished(false)
 #endif
-	, m_name(NULL)
+	, m_name(nullptr)
 {
 #ifndef _WIN32
 	pthread_attr_init(&m_attr);
@@ -115,7 +90,7 @@ StandardThread::~StandardThread()
 	if (m_name)
 	{
 		free(m_name);
-		m_name = NULL;
+		m_name = nullptr;
 	}
 
 #ifdef _WIN32
@@ -276,7 +251,7 @@ bool StandardThread::setPriority(XsThreadPriority pri)
 }
 
 /*! \brief Starts the thread
-	\param name The name of the thread as shown in the debugger, may be NULL in which case the system determines the name.
+	\param name The name of the thread as shown in the debugger, may be nullptr in which case the system determines the name.
 	\returns True if successful
 */
 bool StandardThread::startThread(const char* name)
@@ -290,7 +265,7 @@ bool StandardThread::startThread(const char* name)
 	if (m_name)
 	{
 		free(m_name);
-		m_name = NULL;
+		m_name = nullptr;
 	}
 	if (name)
 		m_name = _strdup(name);
@@ -394,7 +369,7 @@ void StandardThread::stopThread(void) noexcept
 		xsYield();
 	//#endif
 
-	pthread_join(m_thread, NULL);
+	pthread_join(m_thread, nullptr);
 	m_running = false;
 #endif
 	m_thread = XSENS_INVALID_THREAD;
@@ -420,15 +395,20 @@ void StandardThread::threadMain(void)
 	initFunction();
 	do
 	{
-		int32_t rv = innerFunction();
+		int64_t rv = innerFunction();
 		if (rv > 0)
 		{
 			int64_t sleepStart = XsTimeStamp::nowMs();
 			while (!m_stop)
 			{
-				// sleep max 100ms at a time so we can terminate the thread quickly if necessary
 				int64_t timePassed = XsTimeStamp::nowMs() - sleepStart;
-				int32_t remaining = rv - (int32_t) timePassed;
+				// system clock might be changed (e.g. to a point in time in the past)
+				// then XsTimeStamp::nowMs() would be smaller than the sleepStart
+				if (timePassed < 0)
+					break;
+
+				// sleep max 100ms at a time so we can terminate the thread quickly if necessary
+				int64_t remaining = rv - timePassed;
 				if (remaining > 100)
 					XsTime::msleep(100);
 				else if (remaining <= 0)
@@ -450,9 +430,9 @@ void StandardThread::threadMain(void)
 WatchDogThread::WatchDogThread(WatchDogFunction func, void* param)
 	: m_thread(XSENS_INVALID_THREAD)
 #ifdef _WIN32
-	, m_stop(::CreateEvent(NULL, TRUE, FALSE, NULL))
-	, m_running(::CreateEvent(NULL, TRUE, FALSE, NULL))
-	, m_reset(::CreateEvent(NULL, TRUE, FALSE, NULL))
+	, m_stop(::CreateEvent(nullptr, TRUE, FALSE, nullptr))
+	, m_running(::CreateEvent(nullptr, TRUE, FALSE, nullptr))
+	, m_reset(::CreateEvent(nullptr, TRUE, FALSE, nullptr))
 #else
 	, m_running(false)
 	, m_reset(false)
@@ -462,7 +442,7 @@ WatchDogThread::WatchDogThread(WatchDogFunction func, void* param)
 	, m_timeout(10000)
 	, m_func(func)
 	, m_param(param)
-	, m_name(NULL)
+	, m_name(nullptr)
 	, m_threadId(0)
 {
 #ifndef _WIN32
@@ -477,7 +457,7 @@ WatchDogThread::~WatchDogThread()
 	if (m_name)
 	{
 		free(m_name);
-		m_name = NULL;
+		m_name = nullptr;
 	}
 
 #ifdef _WIN32
@@ -552,7 +532,7 @@ bool WatchDogThread::startTimer(uint32_t timeout, const char* name)
 	if (name)
 		m_name = _strdup(name);
 	else
-		m_name = NULL;
+		m_name = nullptr;
 
 #ifdef _WIN32
 	::ResetEvent(m_stop);
@@ -635,7 +615,7 @@ bool WatchDogThread::stopTimer(void) noexcept
 		}
 	}
 
-	rv = pthread_join(m_thread, NULL);
+	rv = pthread_join(m_thread, nullptr);
 	if (rv)
 	{
 		switch (errno)
@@ -759,7 +739,7 @@ Semaphore::Semaphore(int32_t initVal, uint32_t nofOtherHandles, HANDLE* otherHan
 	m_handleList = new HANDLE[m_nofHandles];
 	for (uint32_t i = 0; i < m_nofHandles - 1; i++)
 		m_handleList[i] = otherHandles[i];
-	m_handleList[m_nofHandles - 1] = CreateSemaphore(NULL, initVal, 0x7fffffff, NULL);
+	m_handleList[m_nofHandles - 1] = CreateSemaphore(nullptr, initVal, 0x7fffffff, nullptr);
 }
 
 Semaphore::~Semaphore(void)
@@ -912,7 +892,7 @@ static int clock_gettime(int clk_id, struct timespec* tp)
 	(void)clk_id;
 	struct timeval now;
 
-	int rv = gettimeofday(&now, NULL);
+	int rv = gettimeofday(&now, nullptr);
 	if (rv != 0)
 		return rv;
 
@@ -1035,7 +1015,7 @@ WaitEvent::WaitEvent()
 	: m_waiterCount(0)
 	, m_terminating(false)
 {
-	m_event = ::CreateEventA(NULL, TRUE, FALSE, NULL);
+	m_event = ::CreateEventA(nullptr, TRUE, FALSE, nullptr);
 }
 
 /*! \brief Destructor, terminates the event and waits for waiting threads to be notified before finishing */

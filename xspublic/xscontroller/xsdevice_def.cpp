@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -132,14 +100,14 @@ using namespace XsTime;
 	\brief Add a callback handler to the list
 	\param cb The handler to add to the list.
 	\param chain When set to true (default) the callback is added to child devices as well
-	\note NULL and duplicate handlers are ignored, but chaining is still done.
+	\note nullptr and duplicate handlers are ignored, but chaining is still done.
 */
 
 /*! \fn XsDevice::removeCallbackHandler(XsCallbackPlainC* cb, bool chain = true)
 	\brief Remove a handler from the list
 	\param cb The handler to remove from the list.
 	\param chain When set to true (default) the callback is added to child devices as well
-	\note If \a cb is not found in the list or if \a cb is NULL, the list is not changed, but
+	\note If \a cb is not found in the list or if \a cb is nullptr, the list is not changed, but
 			chaining is still done.
 */
 
@@ -533,6 +501,15 @@ void XsDevice::setGotoConfigOnClose(bool gotoConfigOnClose)
 	\returns The battery level in the range 0-100
 */
 int XsDevice::batteryLevel() const
+{
+	return 0;
+}
+
+/*! \brief Get the secondaryBatterylevel of this device
+	The battery level is a value between 0 and 100 that indicates the remaining capacity as a percentage.
+	\returns The secondary battery level in the range (0..100)
+*/
+int XsDevice::secondaryBatteryLevel() const
 {
 	return 0;
 }
@@ -1740,8 +1717,7 @@ void XsDevice::handleDataPacket(const XsDataPacket& packet)
 */
 bool XsDevice::isMeasuring() const
 {
-	switch (deviceState()) //lint !e788
-	{
+	switch (deviceState())	{
 		case XDS_Measurement:
 		case XDS_WaitingForRecordingStart:
 		case XDS_Recording:
@@ -1761,8 +1737,7 @@ bool XsDevice::isMeasuring() const
 */
 bool XsDevice::isRecording() const
 {
-	switch (deviceState()) //lint !e788
-	{
+	switch (deviceState())	{
 		case XDS_WaitingForRecordingStart:
 		case XDS_Recording:
 		case XDS_FlushingData:
@@ -2154,7 +2129,7 @@ bool XsDevice::closeLogFile()
 		JLDEBUGG(m_logFileInterface);
 		m_logFileInterface->close();
 		delete m_logFileInterface;
-		m_logFileInterface = NULL;
+		m_logFileInterface = nullptr;
 	}
 	return true;
 }
@@ -2972,6 +2947,34 @@ bool XsDevice::setGnssLeverArm(const XsVector& arm)
 /*! \returns The GNSS Lever Arm vector. */
 XsVector XsDevice::gnssLeverArm() const
 {
+	return XsVector();
+}
+
+/*! \brief Sets the lever arm of the device
+	\details The lever arm is the vector from the center of the device to a specific point.
+	The specific point is indicated by the \a type parameter.
+	\param type The type of lever arm to set
+	\param arm The lever arm vector
+	\returns true if the lever arm was successfully set
+	\sa leverArm
+*/
+bool XsDevice::setLeverArm(XsLeverArmType type, const XsVector& arm)
+{
+	(void)type;
+	(void)arm;
+	return false;
+}
+
+/*! \brief Returns the lever arm of the device
+	\details The lever arm is the vector from the center of the device to a specific point.
+	The specific point is indicated by the \a type parameter.
+	\param type The type of lever arm to return
+	\returns The lever arm vector
+	\sa setLeverArm
+*/
+XsVector XsDevice::leverArm(XsLeverArmType type) const
+{
+	(void)type;
 	return XsVector();
 }
 
@@ -4171,12 +4174,14 @@ void XsDevice::clearExternalPacketCaches()
 void XsDevice::clearCacheToRecordingStart()
 {
 	LockGuarded lockG(&m_deviceMutex);
-	for (auto item : m_dataCache)
+	for (auto it = m_dataCache.begin(); it != m_dataCache.end(); )
 	{
-		if (item.first < m_startRecordingPacketId)
-		{
-			delete item.second;
-			m_dataCache.erase(item.first);
+		if (it->first < m_startRecordingPacketId) {
+			delete it->second;
+			it = m_dataCache.erase(it); // Erase and move to the next element safely
+		}
+		else {
+			++it; // Move to the next element
 		}
 	}
 }
