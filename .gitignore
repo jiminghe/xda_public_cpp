@@ -6,3 +6,4 @@ example_mti_receive_data
 *.mtb
 *.a
 *.json
+build/
