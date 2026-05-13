@@ -17,7 +17,7 @@ ExternalProject_Add(
     PREFIX ${CMAKE_BINARY_DIR}/xspublic
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/xspublic
     CONFIGURE_COMMAND ""  # No configure step
-    BUILD_COMMAND $(MAKE)
+    BUILD_COMMAND env --unset=MAKEFLAGS make
     BUILD_IN_SOURCE 1  # Build in the source directory
     INSTALL_COMMAND ""  # No install step
 )
