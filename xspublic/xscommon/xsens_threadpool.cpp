@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -220,7 +188,7 @@ public:
 
 protected:
 	ThreadPool* m_pool;			//!< The pool that contains this thread
-	std::shared_ptr<PooledTask> m_task;			//!< The task that is currently being executed or NULL if the thread is idle
+	std::shared_ptr<PooledTask> m_task;			//!< The task that is currently being executed or nullptr if the thread is idle
 	unsigned int m_executed;	//!< The number of tasks that this thread has executed s o far, including incomplete tasks
 	unsigned int m_completed;	//!< The number of tasks that this thread has completed so far, excluding incomplete tasks
 	unsigned int m_failed;		//!< The number of tasks that this thread has failed to complete so far due to an exception
@@ -262,14 +230,14 @@ int32_t PooledThread::innerFunction(void)
 		bool complete = false;
 		try
 		{
-			if (m_task->m_task->exec())
-			{
-				++m_completed;
-				complete = true;
-			}
-			else if (m_task->m_canceling)
+			if (m_task->m_canceling)
 			{
 				++m_failed;
+				complete = true;
+			}
+			else if (m_task->m_task->exec())
+			{
+				++m_completed;
 				complete = true;
 			}
 		}
@@ -541,7 +509,7 @@ bool ThreadPool::doesTaskExist(ThreadPool::TaskId id)
 	return findTask(id) != nullptr;
 }
 
-/*! \brief Remove the task with the supplied \a id if it exists, waits for the task to be finished
+/*! \brief Cancels the task with the supplied \a id if it exists, waits for the task to be finished (if it was executing)
 */
 void ThreadPool::cancelTask(ThreadPool::TaskId id, bool wait) noexcept
 {
@@ -559,23 +527,14 @@ void ThreadPool::cancelTask(ThreadPool::TaskId id, bool wait) noexcept
 	it = m_delaying.find(id);
 	if (it != m_delaying.end())
 	{
-		reportTaskComplete(it->second);
-		m_delaying.erase(it);
-	}
-
-	it = m_tasksSearch.find(id);
-	if (it != m_tasksSearch.end())
-	{
-		reportTaskComplete(it->second);
-		m_tasksSearch.erase(it);
+		it->second->m_canceling = true;
 	}
 
 	for (auto tskIt = m_tasks.begin(); tskIt != m_tasks.end(); ++tskIt)
 	{
 		if ((*tskIt)->m_id == id)
 		{
-			reportTaskComplete(*tskIt);
-			m_tasks.erase(tskIt);
+			(*tskIt)->m_canceling = true;
 			return;
 		}
 	}
@@ -730,7 +689,7 @@ unsigned int ThreadPool::failedCount(unsigned int thread) const
 	return 0;
 }
 
-ThreadPool* gPool = NULL;
+ThreadPool* gPool = nullptr;
 bool gManagePool = true;
 
 /*! \brief Return the global thread pool object, it will be created if it did not yet exist */
@@ -761,7 +720,7 @@ void ThreadPool::destroy()
 {
 	if (gPool && gManagePool)
 		delete gPool;
-	gPool = NULL;
+	gPool = nullptr;
 	gManagePool = true;
 }
 
@@ -769,7 +728,7 @@ void ThreadPool::destroy()
 	\details This function allows the user to supply his own ThreadPool object to be used
 	by all subsequent operations. If another pool was created by this library, it will be
 	destroyed.
-	\param pool The new threadpool object to use. If NULL is supplied, it is simply destroyed
+	\param pool The new threadpool object to use. If nullptr is supplied, it is simply destroyed
 	or stopped from being used.
 	\sa destroy
 */

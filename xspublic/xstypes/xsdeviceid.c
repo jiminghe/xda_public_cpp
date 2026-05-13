@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -303,7 +271,7 @@ int XsDeviceId_isDot(struct XsDeviceId const* thisPtr)
 		return 0;
 	else
 	{
-		if (memcmp(thisPtr->m_productCode, "XS-", 3) != 0)
+		if (memcmp(thisPtr->m_productCode, "XS-T0", 5) != 0)
 			return 0;
 
 		return 1;
@@ -341,6 +309,11 @@ int XsDeviceId_hasInternalGnss(struct XsDeviceId const* thisPtr)
 	}
 	if (XsDeviceId_isMtigX10(thisPtr))
 		return 1;
+	if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if ((thisPtr->m_productCode[2] == 'G' || thisPtr->m_productCode[2] == 'R') && XsDeviceId_isRugged(thisPtr))
+			return 1;
+	}
 	return 0;
 
 }
@@ -410,7 +383,7 @@ int XsDeviceId_isBodyHub(const struct XsDeviceId* thisPtr)
 	if (XsDeviceId_isLegacyDeviceId(thisPtr))
 		return 0;
 	else
-		return (memcmp(thisPtr->m_productCode, "XSL-HUB", 7) == 0);
+		return (memcmp(thisPtr->m_productCode, "XS-HUB", 6) == 0);
 }
 
 /*! \brief Test if this device ID represents a bodypack (any version) device.
@@ -684,7 +657,7 @@ int XsDeviceId_isGnss(const struct XsDeviceId* thisPtr)
 	}
 	else if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
 	{
-		if (thisPtr->m_productCode[2] == 'G')
+		if (thisPtr->m_productCode[2] == 'G' || thisPtr->m_productCode[2] == 'R')
 			return 1;
 	}
 	else
@@ -695,7 +668,7 @@ int XsDeviceId_isGnss(const struct XsDeviceId* thisPtr)
 		int deviceFamily = atoi(&thisPtr->m_productCode[4]);
 		if (deviceFamily == 7)
 			return 1;
-		else if ((deviceFamily == 670) || (deviceFamily == 680) || (deviceFamily == 870) || (deviceFamily == 880))
+		else if ((deviceFamily == 670) || (deviceFamily == 680))
 			return 1;
 		else
 		{
@@ -727,7 +700,7 @@ int XsDeviceId_isRtk(const struct XsDeviceId* thisPtr)
 			return 0;
 
 		int deviceFamily = atoi(&thisPtr->m_productCode[4]);
-		return ((deviceFamily == 680) || (deviceFamily == 880));
+		return (deviceFamily == 680);
 	}
 	return 0;
 }
@@ -737,7 +710,7 @@ int XsDeviceId_isRtk(const struct XsDeviceId* thisPtr)
 */
 int XsDeviceId_isContainerDevice(const struct XsDeviceId* thisPtr)
 {
-	return XsDeviceId_isBodyPack(thisPtr) || XsDeviceId_isWirelessMaster(thisPtr);
+	return XsDeviceId_isBodyPack(thisPtr) || XsDeviceId_isBodyHub(thisPtr) || XsDeviceId_isWirelessMaster(thisPtr);
 }
 
 /*! \brief Test if this device ID represents an MT device (any Mti, Mtig, Mtx or Mtw)
@@ -825,13 +798,21 @@ void XsDeviceId_toString(const XsDeviceId* thisPtr, XsString* str)
 */
 void XsDeviceId_fromString(XsDeviceId* thisPtr, const XsString* str)
 {
+	XsSize idx;
 	uint64_t tmp = 0;
 	uint16_t sub = 0;
 	if (!thisPtr || !str || !str->m_data)
 		return;
 
-	if (isalpha(str->m_data[0]))
+	for (idx = 0; idx < str->m_size; ++idx)
+	{
+		char c = str->m_data[idx];
+		if (isxdigit(c))
+			continue;
+		if (c == '/' || c == 0)
+			break;
 		return;
+	}
 
 	int result = sscanf(str->m_data, "%" PRINTF_INT64_MODIFIER "x/%hu", &tmp, &sub);
 	if (result >= 1)
@@ -967,6 +948,10 @@ void XsDeviceId_typeName(XsDeviceId const* thisPtr, XsString* str)
 		XsString_assignCharArray(str, "MTw2");
 	else if (XsDeviceId_isMtx2(thisPtr))
 		XsString_assignCharArray(str, "MTx2");
+	else if (XsDeviceId_isMtx3(thisPtr))
+		XsString_assignCharArray(str, "MTx3");
+	else if (XsDeviceId_isBodyHub(thisPtr))
+		XsString_assignCharArray(str, "Hub");
 	else if (XsDeviceId_isBodyPackV2(thisPtr))
 		XsString_assignCharArray(str, "BPACK-V2");
 	else if (XsDeviceId_isBodyPack(thisPtr))
@@ -1032,6 +1017,10 @@ void XsDeviceId_typeName(XsDeviceId const* thisPtr, XsString* str)
 			XsString_assignCharArray(str, "Xsens Avior VRU");
 		else if (XsDeviceId_isAhrs(thisPtr))
 			XsString_assignCharArray(str, "Xsens Avior AHRS");
+		else if (XsDeviceId_isGnss(thisPtr))
+			XsString_assignCharArray(str, "Xsens Avior GNSS/INS");
+		else if (XsDeviceId_isRtk(thisPtr))
+			XsString_assignCharArray(str, "Xsens Avior RTK GNSS/INS");
 	}
 	else if (XsDeviceId_isSirius(thisPtr))
 	{
@@ -1041,9 +1030,9 @@ void XsDeviceId_typeName(XsDeviceId const* thisPtr, XsString* str)
 			XsString_assignCharArray(str, "Xsens Sirius VRU");
 		else if (XsDeviceId_isAhrs(thisPtr))
 			XsString_assignCharArray(str, "Xsens Sirius AHRS");
-		else if (XsDeviceId_isMtigX10(thisPtr))
+		else if (XsDeviceId_isGnss(thisPtr))
 			XsString_assignCharArray(str, "Xsens Sirius GNSS/INS");
-		else if (XsDeviceId_isMtigX00(thisPtr))
+		else if (XsDeviceId_isRtk(thisPtr))
 			XsString_assignCharArray(str, "Xsens Sirius RTK GNSS/INS");
 	}
 	else if (XsDeviceId_isGlove(thisPtr))

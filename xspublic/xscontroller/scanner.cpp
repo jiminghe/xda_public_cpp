@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -63,10 +31,10 @@
 //  
 
 #include "scanner.h"
-
 #ifdef _WIN32
 	#include <devguid.h>
 	#include <initguid.h>
+	#include <Ntddser.h>
 	#include <Usbiodef.h>
 	#include <cfgmgr32.h>
 	#include <regstr.h>
@@ -125,7 +93,7 @@ Scanner::~Scanner()
 /*!	\brief Set a callback function for scan log progress and problem reporting
 	\details When set, any scan will use the provided callback function to report progress and failures.
 	Normal operation is not affected, so all return values for the scan functions remain valid.
-	\param cb The callback function to use. When set to NULL, no callbacks will be generated.
+	\param cb The callback function to use. When set to nullptr, no callbacks will be generated.
 */
 void Scanner::setScanLogCallback(XsScanLogCallbackFunc cb)
 {
@@ -378,7 +346,7 @@ bool Scanner::xsFilterResponsiveDevices(XsPortInfoArray& ports, XsBaudRate baudr
 std::string Scanner::getDevicePath(HDEVINFO hDevInfo, SP_DEVINFO_DATA* DeviceInfoData)
 {
 	char deviceInstanceID[MAX_DEVICE_ID_LEN];
-	SetupDiGetDeviceInstanceIdA(hDevInfo, DeviceInfoData, deviceInstanceID, MAX_DEVICE_ID_LEN, NULL);
+	SetupDiGetDeviceInstanceIdA(hDevInfo, DeviceInfoData, deviceInstanceID, MAX_DEVICE_ID_LEN, nullptr);
 	return std::string(deviceInstanceID);
 }
 #endif
@@ -444,7 +412,7 @@ bool Scanner::xsEnumerateSerialPorts(XsPortInfoArray& ports, bool ignoreNonXsens
 		char pszPortName[256];
 		DWORD dwSize = 256;
 		DWORD dwType = 0;
-		if ((RegQueryValueExA(hDeviceKey, "PortName", NULL, &dwType, (LPBYTE) pszPortName, &dwSize) != ERROR_SUCCESS) || (dwType != REG_SZ))
+		if ((RegQueryValueExA(hDeviceKey, "PortName", nullptr, &dwType, (LPBYTE) pszPortName, &dwSize) != ERROR_SUCCESS) || (dwType != REG_SZ))
 			continue;
 
 		// If it looks like "COMX" then
@@ -569,7 +537,7 @@ bool Scanner::xsEnumerateSerialPorts(XsPortInfoArray& ports, bool ignoreNonXsens
 		DIR* dir;
 		struct dirent* entry;
 
-		if ((dir = opendir("/dev/")) == NULL)
+		if ((dir = opendir("/dev/")) == nullptr)
 			return false;
 
 		while ((entry = readdir(dir)))
@@ -634,7 +602,7 @@ int Scanner::xsScanGetHubNumber(HDEVINFO hDevInfo, SP_DEVINFO_DATA* deviceInfoDa
 			&DataT,
 			(PBYTE)buffer,
 			256,
-			NULL))
+			nullptr))
 	{
 		LOGXSSCAN("Registry access successful: \"" << buffer << "\"");
 		char const* hubString = strstr((char const*)buffer, HUB_SEARCH_STRING);
@@ -662,8 +630,8 @@ XsPortInfo Scanner::xsScanPortByHubId(const char* id)
 	// Get device interface info set handle for all devices attached to system
 	HDEVINFO hDevInfo = SetupDiGetClassDevs(
 			&GUID_DEVCLASS_PORTS, /* CONST GUID * ClassGuid - USB class GUID */
-			NULL, /* PCTSTR Enumerator */
-			NULL, /* HWND hwndParent */
+			nullptr, /* PCTSTR Enumerator */
+			nullptr, /* HWND hwndParent */
 			DIGCF_PRESENT | DIGCF_DEVICEINTERFACE /* DWORD Flags */
 		);
 
@@ -681,11 +649,10 @@ XsPortInfo Scanner::xsScanPortByHubId(const char* id)
 	devInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
 	XsPortInfo portInfo;
 	int port = 0;
-	for (DWORD dwIndex = 0; port == 0; ++dwIndex)	//lint !e440 funky condition is ok
-	{
+	for (DWORD dwIndex = 0; port == 0; ++dwIndex)	{
 		BOOL bRet = SetupDiEnumDeviceInterfaces(
 				hDevInfo, /* HDEVINFO DeviceInfoSet */
-				NULL, /* PSP_DEVINFO_DATA DeviceInfoData */
+				nullptr, /* PSP_DEVINFO_DATA DeviceInfoData */
 				&GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR, /* CONST GUID * InterfaceClassGuid */
 				dwIndex,
 				&devInterfaceData /* PSP_DEVICE_INTERFACE_DATA DeviceInterfaceData */
@@ -731,7 +698,7 @@ XsPortInfo Scanner::xsScanPortByHubId(const char* id)
 						char pszPortName[256] = "";
 						DWORD dwSize = 256;
 						DWORD dwType = 0;
-						if ((RegQueryValueExA(hDeviceKey, "PortName", NULL, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
+						if ((RegQueryValueExA(hDeviceKey, "PortName", nullptr, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
 						{
 							// If it looks like "COMX" then
 							// add it to the array which will be returned
@@ -773,8 +740,8 @@ bool Scanner::xsScanXsensUsbHubs(XsIntArray& hubs, XsPortInfoArray& ports)
 	// Get device interface info set handle for all devices attached to system
 	HDEVINFO hDevInfo = SetupDiGetClassDevs(
 			&GUID_DEVINTERFACE_USB_DEVICE, /* CONST GUID * ClassGuid - USB class GUID */
-			NULL, /* PCTSTR Enumerator */
-			NULL, /* HWND hwndParent */
+			nullptr, /* PCTSTR Enumerator */
+			nullptr, /* HWND hwndParent */
 			DIGCF_PRESENT | DIGCF_DEVICEINTERFACE /* DWORD Flags */
 		);
 
@@ -794,7 +761,7 @@ bool Scanner::xsScanXsensUsbHubs(XsIntArray& hubs, XsPortInfoArray& ports)
 	{
 		BOOL bRet = SetupDiEnumDeviceInterfaces(
 				hDevInfo, /* HDEVINFO DeviceInfoSet */
-				NULL, /* PSP_DEVINFO_DATA DeviceInfoData */
+				nullptr, /* PSP_DEVINFO_DATA DeviceInfoData */
 				&GUID_DEVINTERFACE_USB_DEVICE, /* CONST GUID * InterfaceClassGuid */
 				dwIndex,
 				&devInterfaceData /* PSP_DEVICE_INTERFACE_DATA DeviceInterfaceData */
@@ -820,7 +787,7 @@ bool Scanner::xsScanXsensUsbHubs(XsIntArray& hubs, XsPortInfoArray& ports)
 		while (SetupDiGetDeviceInterfaceDetailA(hDevInfo, &devInterfaceData, &ifdData, 1020, &reqSize, &diData))
 		{
 			DWORD dataT;
-			if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &diData, SPDRP_MFG, &dataT, (PBYTE)buffer, 256, NULL))
+			if (SetupDiGetDeviceRegistryPropertyA(hDevInfo, &diData, SPDRP_MFG, &dataT, (PBYTE)buffer, 256, nullptr))
 			{
 				if (_strnicmp(buffer, "xsens", 5))	// if this is NOT an xsens device, ignore it
 					break;
@@ -925,7 +892,7 @@ XsUsbHubInfo Scanner::xsScanUsbHub(const XsPortInfo& portInfo)
 				&dataT,
 				(PBYTE)buffer,
 				256,
-				NULL))
+				nullptr))
 			continue;
 
 		// Get the registry key which stores the ports settings
@@ -936,7 +903,7 @@ XsUsbHubInfo Scanner::xsScanUsbHub(const XsPortInfo& portInfo)
 			char pszPortName[256];
 			DWORD dwSize = 256;
 			DWORD dwType = 0;
-			if ((RegQueryValueExA(hDeviceKey, "PortName", NULL, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
+			if ((RegQueryValueExA(hDeviceKey, "PortName", nullptr, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
 			{
 				// If it looks like "COMX" then
 				// add it to the array which will be returned
@@ -982,7 +949,7 @@ XsUsbHubInfo Scanner::xsScanUsbHub(const XsPortInfo& portInfo)
 	Udev xsudev;
 
 	udev* udevInstance = xsudev.unew();
-	if (udevInstance == NULL)
+	if (udevInstance == nullptr)
 	{
 		fprintf(stderr, "Unable to create udev object\n");
 		return XsUsbHubInfo();
@@ -993,7 +960,7 @@ XsUsbHubInfo Scanner::xsScanUsbHub(const XsPortInfo& portInfo)
 
 	udev_list_entry* devices = xsudev.enumerate_get_list_entry(enumerate);
 	udev_list_entry* dev;
-	for (dev = devices; dev != NULL; dev = xsudev.list_entry_get_next(dev))
+	for (dev = devices; dev != nullptr; dev = xsudev.list_entry_get_next(dev))
 	{
 		const char* path = xsudev.list_entry_get_name(dev);
 		udev_device* device = xsudev.device_new_from_syspath(udevInstance, path);

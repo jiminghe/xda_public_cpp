@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -260,13 +228,13 @@ struct XsArrayImpl : private XsArray
 		\param src pointer to an array of output configurations
 		\sa XsArray_construct
 	*/
-	inline explicit XsArrayImpl<T, D, I>(XsSize count = 0, T const* src = 0)
+	inline explicit XsArrayImpl(XsSize count = 0, T const* src = 0)
 		: XsArray(&D, count, src)
 	{
 	}
 
 	//! \brief Constructs the XsArray as a copy of \a other
-	inline XsArrayImpl<T, D, I>(ArrayImpl const& other)
+	inline XsArrayImpl(ArrayImpl const& other)
 		: XsArray(other)
 	{
 	}
@@ -274,7 +242,7 @@ struct XsArrayImpl : private XsArray
 #ifndef XSENS_NOITERATOR
 	//! \brief Constructs the XsArray with a copy of the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
-	inline explicit XsArrayImpl<T, D, I>(Iterator const& beginIt, Iterator const& endIt)
+	inline explicit XsArrayImpl(Iterator const& beginIt, Iterator const& endIt)
 		: XsArray(&D, 0, 0)
 	{
 		ptrdiff_t diff = endIt - beginIt;
@@ -287,7 +255,7 @@ struct XsArrayImpl : private XsArray
 	}
 #endif
 	//! \brief Creates the XsArray as a reference to the data supplied in \a ref
-	inline explicit XsArrayImpl<T, D, I>(T* ref, XsSize sz, XsDataFlags flags /* = XSDF_None */)
+	inline explicit XsArrayImpl(T* ref, XsSize sz, XsDataFlags flags /* = XSDF_None */)
 		: XsArray(&D, ref, sz, flags)
 	{
 	}
@@ -941,13 +909,13 @@ public:
 
 #endif
 	/*! \brief Swap the contents of the array with those of \a other. \param other The array to swap contents with. \sa XsArray_swap*/
-	inline void swap(ArrayImpl& other)
+	inline void swap(ArrayImpl& other) noexcept
 	{
 		XsArray_swap(this, &other);
 	}
 
 	/*! \brief Swap the contents the \a first and \a second array */
-	friend void swap(ArrayImpl& first, ArrayImpl& second)
+	friend void swap(ArrayImpl& first, ArrayImpl& second) noexcept
 	{
 		first.swap(second);
 	}

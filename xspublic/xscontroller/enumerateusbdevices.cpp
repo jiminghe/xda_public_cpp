@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -66,9 +34,12 @@
 #include "enumerateusbdevices.h"
 
 #ifdef _WIN32
-	#include <windows.h>
+	#ifndef WIN32_LEAN_AND_MEAN
+		#define WIN32_LEAN_AND_MEAN  // Exclude rarely-used stuff from Windows headers
+	#endif
+	#include <Windows.h>
 	#include <string.h>
-	#include <setupapi.h>
+	#include <SetupAPI.h>
 	#include <devguid.h>
 	#include <regstr.h>
 	#include <cfgmgr32.h>
@@ -85,7 +56,7 @@
 static std::string getDevicePath(HDEVINFO hDevInfo, SP_DEVINFO_DATA* DeviceInfoData)
 {
 	char deviceInstanceID[MAX_DEVICE_ID_LEN];
-	SetupDiGetDeviceInstanceIdA(hDevInfo, DeviceInfoData, deviceInstanceID, MAX_DEVICE_ID_LEN, NULL);
+	SetupDiGetDeviceInstanceIdA(hDevInfo, DeviceInfoData, deviceInstanceID, MAX_DEVICE_ID_LEN, nullptr);
 	return std::string(deviceInstanceID);
 }
 #endif
@@ -112,15 +83,14 @@ bool xsEnumerateUsbDevices(XsPortInfoArray& ports)
 
 	HDEVINFO deviceInfo;
 	SP_DEVICE_INTERFACE_DATA interfaceData;
-	PSP_DEVICE_INTERFACE_DETAIL_DATA_A detailData = NULL;
+	PSP_DEVICE_INTERFACE_DETAIL_DATA_A detailData = nullptr;
 
-	deviceInfo = SetupDiGetClassDevs(&guid, NULL, NULL,	DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+	deviceInfo = SetupDiGetClassDevs(&guid, nullptr, nullptr,	DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
 	// Initialize variables.
 	interfaceData.cbSize = sizeof(SP_INTERFACE_DEVICE_DATA);
-	for (DWORD dwIndex = 0; true; ++dwIndex)	//lint !e774 !e440 !e506
-	{
-		BOOL bRet = SetupDiEnumDeviceInterfaces(deviceInfo, NULL, &guid, dwIndex, &interfaceData);
+	for (DWORD dwIndex = 0; true; ++dwIndex)	{
+		BOOL bRet = SetupDiEnumDeviceInterfaces(deviceInfo, nullptr, &guid, dwIndex, &interfaceData);
 		if (!bRet)
 		{
 			if (GetLastError() == ERROR_NO_MORE_ITEMS)
@@ -128,7 +98,7 @@ bool xsEnumerateUsbDevices(XsPortInfoArray& ports)
 		}
 		else
 		{
-			if (!SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, NULL, 0, &requiredLength, NULL))
+			if (!SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, nullptr, 0, &requiredLength, nullptr))
 			{
 				if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
 				{
@@ -137,7 +107,7 @@ bool xsEnumerateUsbDevices(XsPortInfoArray& ports)
 				}
 			}
 			detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_A)LocalAlloc(LMEM_FIXED, requiredLength);
-			if (NULL == detailData)
+			if (nullptr == detailData)
 			{
 				SetupDiDestroyDeviceInfoList(deviceInfo);
 				return false;

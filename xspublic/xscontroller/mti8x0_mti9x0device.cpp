@@ -1,5 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -30,39 +30,7 @@
 //  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
 //  
 
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-#include "mti9x0device.h"
+#include "mti8x0_mti9x0device.h"
 
 #include <xstypes/xsdatapacket.h>
 #include "replyobject.h"
@@ -84,7 +52,7 @@ using namespace xsens;
 /*! \brief Constructs a device
 	\param comm The communicator to construct with
 */
-Mti9X0Device::Mti9X0Device(Communicator* comm) :
+Mti8X0Mti9X0Device::Mti8X0Mti9X0Device(Communicator* comm) :
 	MtiBaseDeviceEx(comm)
 {
 	if (comm)
@@ -96,13 +64,13 @@ Mti9X0Device::Mti9X0Device(Communicator* comm) :
 
 /*! \brief Destroys a device
 */
-Mti9X0Device::~Mti9X0Device()
+Mti8X0Mti9X0Device::~Mti8X0Mti9X0Device()
 {
 }
 
 /*! \brief Returns the base update rate (Hz) corresponding to the dataType
 */
-MtiBaseDevice::BaseFrequencyResult Mti9X0Device::getBaseFrequencyInternal(XsDataIdentifier dataType) const
+MtiBaseDevice::BaseFrequencyResult Mti8X0Mti9X0Device::getBaseFrequencyInternal(XsDataIdentifier dataType) const
 {
 	MtiBaseDevice::BaseFrequencyResult result;
 	result.m_frequency = 0;
@@ -114,15 +82,9 @@ MtiBaseDevice::BaseFrequencyResult Mti9X0Device::getBaseFrequencyInternal(XsData
 		((dataType & XDI_FullTypeMask) == XDI_RawGyroTemp))
 		return result;
 
-	if ((dataType & XDI_FullTypeMask) == XDI_AccelerationHR)
+	if ((dataType & XDI_FullTypeMask) == XDI_AccelerationHR || (dataType & XDI_FullTypeMask) == XDI_RateOfTurnHR)
 	{
 		result.m_frequency = 2000;
-		return result;
-	}
-
-	if ((dataType & XDI_FullTypeMask) == XDI_RateOfTurnHR)
-	{
-		result.m_frequency = hardwareVersion().major() == 2 ? 2000 : 1600;
 		return result;
 	}
 
@@ -149,13 +111,14 @@ MtiBaseDevice::BaseFrequencyResult Mti9X0Device::getBaseFrequencyInternal(XsData
 				return 100;
 			case XDI_RawSensorGroup:
 				return 200;
-
+			case XDI_MaritimeMotionGroup:
+				return (deviceId().isImu() || deviceId().isVru()) ? 0 : 100;
 			case XDI_GnssGroup:
 				if (fullType == XDI_GnssPvtPulse)
 					return deviceId().isRtk() ? XDI_MAX_FREQUENCY_VAL : 0;
 				return deviceId().isGnss() ? XDI_MAX_FREQUENCY_VAL : 0;
 			case XDI_PressureGroup:
-				return 100;
+				return (deviceId().isRugged() && !deviceId().isGnss()) ? 0 : 100;
 			case XDI_PositionGroup:
 				return deviceId().isGnss() ? 400 : 0;
 			case XDI_VelocityGroup:
@@ -175,7 +138,7 @@ MtiBaseDevice::BaseFrequencyResult Mti9X0Device::getBaseFrequencyInternal(XsData
 /*! \returns The sync line for a mtitx0 device This overrides the base class method.
 	\param setting The sync setting to get a sync line from
 */
-uint8_t Mti9X0Device::syncLine(const XsSyncSetting& setting) const
+uint8_t Mti8X0Mti9X0Device::syncLine(const XsSyncSetting& setting) const
 {
 	SyncLineGmt gmtLine = xslToXslgmt(setting.m_line);
 	assert(gmtLine != XSLGMT_Invalid);
@@ -184,31 +147,46 @@ uint8_t Mti9X0Device::syncLine(const XsSyncSetting& setting) const
 
 /*! \returns True if this device has an ICC support
 */
-bool Mti9X0Device::hasIccSupport() const
+bool Mti8X0Mti9X0Device::hasIccSupport() const
 {
 	return (firmwareVersion() >= XsVersion(1, 1, 0));
 }
 
 
-XsStringOutputTypeArray Mti9X0Device::supportedStringOutputTypes() const
+XsStringOutputTypeArray Mti8X0Mti9X0Device::supportedStringOutputTypes() const
 {
 	XsStringOutputTypeArray outputs;
 
-	outputs.push_back(XSOT_PSONCMS);
-	outputs.push_back(XSOT_HCMTW);
-	outputs.push_back(XSOT_HEROT);
-	outputs.push_back(XSOT_PTCF);
-	outputs.push_back(XSOT_GPZDA);
-	outputs.push_back(XSOT_TSS2);
-	outputs.push_back(XSOT_PHTRO);
-	outputs.push_back(XSOT_PRDID);
-	outputs.push_back(XSOT_EM1000);
-	outputs.push_back(XSOT_HEHDT);
-	outputs.push_back(XSOT_HCHDM);
-	outputs.push_back(XSOT_GPGGA);
-	outputs.push_back(XSOT_GPRMC);
-	outputs.push_back(XSOT_XSVEL);
-	outputs.push_back(XSOT_HCHDG);
+	if (deviceId().isImu() || deviceId().isVru() || deviceId().isAhrs() || deviceId().isGnss())
+	{
+		outputs.push_back(XSOT_PSONCMS);
+		outputs.push_back(XSOT_HCMTW);
+		outputs.push_back(XSOT_HEROT);
+		outputs.push_back(XSOT_PTCF);
+		outputs.push_back(XSOT_GPZDA);
+	}
+
+	if (deviceId().isVru() || deviceId().isAhrs() || deviceId().isGnss())
+	{
+		outputs.push_back(XSOT_TSS2);
+		outputs.push_back(XSOT_PHTRO);
+		outputs.push_back(XSOT_PRDID);
+		outputs.push_back(XSOT_EM1000);
+		outputs.push_back(XSOT_HEHDT);
+	}
+
+	if (deviceId().isAhrs() || deviceId().isGnss())
+	{
+		outputs.push_back(XSOT_HCHDM);
+		outputs.push_back(XSOT_HCHDG);
+	}
+
+	if (deviceId().isGnss())
+	{
+		outputs.push_back(XSOT_GPGGA);
+		outputs.push_back(XSOT_GPRMC);
+		outputs.push_back(XSOT_XSVEL);
+	}
 
 	return outputs;
 }
@@ -218,7 +196,7 @@ XsStringOutputTypeArray Mti9X0Device::supportedStringOutputTypes() const
 	\param frequency The frequency to set
 	\returns True if the device was successfully updated
 */
-bool Mti9X0Device::setStringOutputMode6x0(uint32_t type, uint16_t frequency)
+bool Mti8X0Mti9X0Device::setStringOutputMode6x0(uint32_t type, uint16_t frequency)
 {
 	XsMessage sndType(XMID_SetStringOutputConfig);
 	sndType.setBusId(XS_BID_MASTER);	// Always send to master device
@@ -231,7 +209,7 @@ bool Mti9X0Device::setStringOutputMode6x0(uint32_t type, uint16_t frequency)
 	return true;
 }
 
-uint32_t Mti9X0Device::supportedStatusFlags() const
+uint32_t Mti8X0Mti9X0Device::supportedStatusFlags() const
 {
 	return (uint32_t)(
 			XSF_ExternalClockSynced
@@ -262,14 +240,14 @@ uint32_t Mti9X0Device::supportedStatusFlags() const
 
 /*! \copybrief XsDevice::shortProductCode
 */
-XsString Mti9X0Device::shortProductCode() const
+XsString Mti8X0Mti9X0Device::shortProductCode() const
 {
 	return stripProductCode(deviceId());
 }
 
 /*! \copybrief XsDevice::canOutputConfiguration
 */
-XsCanOutputConfigurationArray Mti9X0Device::canOutputConfiguration() const
+XsCanOutputConfigurationArray Mti8X0Mti9X0Device::canOutputConfiguration() const
 {
 	XsMessage snd(XMID_ReqCanOutputConfig), rcv;
 	if (!doTransaction(snd, rcv))
@@ -284,7 +262,7 @@ XsCanOutputConfigurationArray Mti9X0Device::canOutputConfiguration() const
 
 /*! \copydoc XsDevice::setCanOutputConfiguration
 */
-bool Mti9X0Device::setCanOutputConfiguration(XsCanOutputConfigurationArray& config)
+bool Mti8X0Mti9X0Device::setCanOutputConfiguration(XsCanOutputConfigurationArray& config)
 {
 	XsMessage snd(XMID_SetCanOutputConfig, 4);
 	snd.setBusId(busId());
@@ -303,7 +281,7 @@ bool Mti9X0Device::setCanOutputConfiguration(XsCanOutputConfigurationArray& conf
 
 /*! \copybrief XsDevice::canConfiguration
 */
-uint32_t Mti9X0Device::canConfiguration() const
+uint32_t Mti8X0Mti9X0Device::canConfiguration() const
 {
 	XsMessage snd(XMID_ReqCanConfig), rcv;
 	if (!doTransaction(snd, rcv))
@@ -314,7 +292,7 @@ uint32_t Mti9X0Device::canConfiguration() const
 
 /*! \copydoc XsDevice::portConfiguration
 */
-XsIntArray Mti9X0Device::portConfiguration() const
+XsIntArray Mti8X0Mti9X0Device::portConfiguration() const
 {
 	XsMessage snd(XMID_ReqPortConfig), rcv;
 	if (!doTransaction(snd, rcv))
@@ -329,7 +307,7 @@ XsIntArray Mti9X0Device::portConfiguration() const
 
 /*! \copydoc XsDevice::setPortConfiguration
 */
-bool Mti9X0Device::setPortConfiguration(XsIntArray& config)
+bool Mti8X0Mti9X0Device::setPortConfiguration(XsIntArray& config)
 {
 	XsIntArray currentConfig = portConfiguration();
 
@@ -355,7 +333,7 @@ bool Mti9X0Device::setPortConfiguration(XsIntArray& config)
 
 /*! \copydoc XsDevice::setCanOutputConfiguration
 */
-bool Mti9X0Device::setCanConfiguration(uint32_t config)
+bool Mti8X0Mti9X0Device::setCanConfiguration(uint32_t config)
 {
 	uint32_t currentConfig = canConfiguration();
 
@@ -375,9 +353,9 @@ bool Mti9X0Device::setCanConfiguration(uint32_t config)
 
 /*! \copydoc XsDevice::setGnssLeverArm
 */
-bool Mti9X0Device::setGnssLeverArm(const XsVector& arm)
+bool Mti8X0Mti9X0Device::setGnssLeverArm(const XsVector& arm)
 {
-	if (!deviceId().isRtk())
+	if (!deviceId().isGnss())
 		return false;
 
 	XsMessage snd(XMID_SetGnssLeverArm, 3 * sizeof(float));
@@ -395,9 +373,9 @@ bool Mti9X0Device::setGnssLeverArm(const XsVector& arm)
 
 /*! \copydoc XsDevice::gnssLeverArm
 */
-XsVector Mti9X0Device::gnssLeverArm() const
+XsVector Mti8X0Mti9X0Device::gnssLeverArm() const
 {
-	if (!deviceId().isRtk())
+	if (!deviceId().isGnss())
 		return XsVector();
 
 	XsMessage snd(XMID_ReqGnssLeverArm), rcv;
@@ -413,8 +391,11 @@ XsVector Mti9X0Device::gnssLeverArm() const
 
 /*! \copydoc XsDevice::ubloxGnssPlatform
 */
-XsUbloxGnssPlatform Mti9X0Device::ubloxGnssPlatform() const
+XsUbloxGnssPlatform Mti8X0Mti9X0Device::ubloxGnssPlatform() const
 {
+	if (!deviceId().isGnss())
+		return XGP_Portable;
+
 	XsUbloxGnssPlatform platform = XGP_Portable;
 	auto gnssReceivSett = gnssReceiverSettings();
 	if (gnssReceivSett.size() > 3)
@@ -432,8 +413,11 @@ XsUbloxGnssPlatform Mti9X0Device::ubloxGnssPlatform() const
 
 /*! \copydoc XsDevice::setUbloxGnssPlatform
 */
-bool Mti9X0Device::setUbloxGnssPlatform(XsUbloxGnssPlatform ubloxGnssPlatform)
+bool Mti8X0Mti9X0Device::setUbloxGnssPlatform(XsUbloxGnssPlatform ubloxGnssPlatform)
 {
+	if (!deviceId().isGnss())
+		return XGP_Portable;
+
 	bool result = false;
 	auto gnssReceivSett = gnssReceiverSettings();
 	if (gnssReceivSett.size() > 3)
@@ -450,4 +434,41 @@ bool Mti9X0Device::setUbloxGnssPlatform(XsUbloxGnssPlatform ubloxGnssPlatform)
 		}
 	}
 	return result;
+}
+
+/*! \copydoc XsDevice::setLeverArm
+*/
+bool Mti8X0Mti9X0Device::setLeverArm(XsLeverArmType type, const XsVector& arm)
+{
+	if (deviceId().isImu())
+		return false;
+
+	XsMessage snd(XMID_SetLeverArm, 1 + 3 * sizeof(float));
+	snd.setBusId(busId());
+	snd.setDataByte((uint8_t)type, 0);
+	snd.setDataFloat((float)arm[0], 1 + 0/* sizeof(float)*/);
+	snd.setDataFloat((float)arm[1], 1 + 1 * sizeof(float));
+	snd.setDataFloat((float)arm[2], 1 + 2 * sizeof(float));
+	XsMessage rcv;
+	if (!doTransaction(snd, rcv))
+		return false;
+	return true;
+}
+
+/*! \copydoc XsDevice::leverArm
+*/
+XsVector Mti8X0Mti9X0Device::leverArm(XsLeverArmType type) const
+{
+	if (deviceId().isImu())
+		return XsVector();
+
+	XsMessage snd(XMID_ReqLeverArm), rcv;
+	snd.setDataByte((uint8_t)type, 0);
+	if (!doTransaction(snd, rcv))
+		return XsVector();
+	XsVector arm(3);
+	arm[0] = rcv.getDataFloat(0/* sizeof(float)*/);
+	arm[1] = rcv.getDataFloat(1 * sizeof(float));
+	arm[2] = rcv.getDataFloat(2 * sizeof(float));
+	return arm;
 }

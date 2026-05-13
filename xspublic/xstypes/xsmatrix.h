@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -127,7 +95,7 @@ struct XsMatrix
 public:
 	/*! \brief Initialize an XsMatrix object with the specified number of \a rows and \a cols */
 	inline explicit XsMatrix(XsSize rows = 0, XsSize cols = 0, XsSize strde = 0, const XsReal* dat = 0)
-		: m_data(0)
+		: m_data(nullptr)
 		, m_rows(0)
 		, m_cols(0)
 		, m_stride(0)
@@ -139,7 +107,7 @@ public:
 
 	/*! \brief Initialize an XsMatrix object from the \a other XsMatrix */
 	inline XsMatrix(const XsMatrix& other)
-		: m_data(0)
+		: m_data(nullptr)
 		, m_rows(0)
 		, m_cols(0)
 		, m_stride(0)
@@ -150,8 +118,8 @@ public:
 
 #if !defined(SWIG) && !defined(__ADSP21000__) && !defined(__AVR32__)
 	/*! \brief Move-construct an XsMatrix object from the \a other XsMatrix */
-	inline XsMatrix(XsMatrix&& other)
-		: m_data(0)
+	inline XsMatrix(XsMatrix&& other) noexcept
+		: m_data(nullptr)
 		, m_rows(0)
 		, m_cols(0)
 		, m_stride(0)
@@ -187,7 +155,7 @@ public:
 
 	//! \brief \copybrief XsMatrix_fromQuaternion
 	inline explicit XsMatrix(const XsQuaternion& quat)
-		: m_data(0)
+		: m_data(nullptr)
 		, m_rows(0)
 		, m_cols(0)
 		, m_stride(0)
@@ -205,7 +173,7 @@ public:
 	/*! \brief Resize the matrix to the specified number of \a rows and \a cols, destroying its current contents */
 	inline void setSize(XsSize rows, XsSize cols, XsSize stride = 0)
 	{
-		XsMatrix_assign(this, rows, cols, stride, 0, 0);
+		XsMatrix_assign(this, rows, cols, stride, nullptr, 0);
 	}
 
 	/*! \brief \copybrief XsMatrix_copy */
@@ -343,13 +311,13 @@ public:
 		data an elementwise swap is done, but only if the matrices are the same size.
 		\param b Object whose contents will be swapped with this
 	*/
-	inline void swap(XsMatrix& b)
+	inline void swap(XsMatrix& b) noexcept
 	{
 		XsMatrix_swap(this, &b);
 	}
 
 	/*! \brief swaps the contents \a first with that of \a second */
-	friend void swap(XsMatrix& first, XsMatrix& second)
+	friend void swap(XsMatrix& first, XsMatrix& second) noexcept
 	{
 		first.swap(second);
 	}
