@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -106,52 +74,54 @@ public:
 
 	XsOutputConfigurationArray outputConfiguration() const override;
 
-	double headingOffset() const;
+	double headingOffset() const override;
 
 	virtual bool canDoOrientationResetInFirmware(XsResetMethod method);
-	virtual bool scheduleOrientationReset(XsResetMethod method);
+	virtual bool scheduleOrientationReset(XsResetMethod method) override;
 	virtual bool storeAlignmentMatrix();
 
-	virtual bool setLocationId(int id);
-	int locationId() const;
+	virtual bool setLocationId(int id) override;
+	int locationId() const override;
 
-	XsString productCode() const;
+	XsString productCode() const override;
 
 	XsBaudRate serialBaudRate() const override;
 
-	bool reinitialize();
+	bool reinitialize() override;
 
 	XsFilterProfile onboardFilterProfile() const override;
 	bool setOnboardFilterProfile(int profileType) override;
 	bool setOnboardFilterProfile(XsString const& profileType) override;
 
-	XsVersion hardwareVersion() const;
+	XsVersion hardwareVersion() const override;
 
 	XsFilterProfileArray availableOnboardFilterProfiles() const override;
 
 	bool resetLogFileReadPosition() override;
 
-	bool restoreFactoryDefaults();
+	bool restoreFactoryDefaults() override;
 
-	double accelerometerRange() const;
-	double gyroscopeRange() const;
+	double accelerometerRange() const override;
+	double actualAccelerometerRange() const override;
+	double gyroscopeRange() const override;
+	double actualGyroscopeRange() const override;
 
 	void writeDeviceSettingsToFile() override;
 
-	bool setNoRotation(uint16_t duration);
+	bool setNoRotation(uint16_t duration) override;
 
 	XsVector initialPositionLLA() const override;
 	bool setInitialPositionLLA(const XsVector& lla) override;
 
-	XsErrorMode errorMode() const;
-	bool setErrorMode(XsErrorMode errorMode);
+	XsErrorMode errorMode() const override;
+	bool setErrorMode(XsErrorMode errorMode) override;
 
-	uint16_t rs485TransmissionDelay() const;
-	bool setRs485TransmissionDelay(uint16_t delay);
+	uint16_t rs485TransmissionDelay() const override;
+	bool setRs485TransmissionDelay(uint16_t delay) override;
 
-	XsSelfTestResult runSelfTest();
+	XsSelfTestResult runSelfTest() override;
 
-	bool requestData();
+	bool requestData() override;
 	bool storeFilterState() override;
 
 	static int calcFrequency(int baseFrequency, uint16_t skipFactor);
@@ -162,13 +132,14 @@ public:
 protected:
 	explicit MtDevice(XsDeviceId const& id);
 	explicit MtDevice(Communicator* comm);
+	explicit MtDevice(XsDevice*, const XsDeviceId&);
 
 	virtual void updateFilterProfiles();
 
 	XsFilterProfileArray readFilterProfilesFromDevice() const;
 	virtual void fetchAvailableHardwareScenarios();
 
-	static XsString stripProductCode(const XsString& code);
+	static XsString stripProductCode(const XsDeviceId &did);
 
 	uint32_t syncTicksToUs(uint32_t ticks) const;
 	uint32_t usToSyncTicks(uint32_t us) const;
@@ -191,6 +162,9 @@ protected:
 
 	//!	Construct a device using \a comm for communication
 	explicit MtDeviceEx(Communicator* comm) : MtDevice(comm) {}
+
+	//! Construct a device with device id \a childDeviceId for master \a master
+	explicit MtDeviceEx(XsDevice* master, const XsDeviceId& childDeviceId) : MtDevice(master, childDeviceId) {}
 };
 #else
 #include "mtdeviceex.h"

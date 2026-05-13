@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -69,7 +37,6 @@
 #include <xstypes/xsvector3.h>
 #include "xsselftestresult.h"
 #include <xstypes/xsstatusflag.h>
-#include <xstypes/xsfilterprofile.h>
 #include <algorithm>
 
 // Undef the windows min macro that conflict with e.g. std::numeric_limits<..>::min
@@ -90,6 +57,13 @@ MtDevice::MtDevice(XsDeviceId const& id)
 */
 MtDevice::MtDevice(Communicator* comm)
 	: XsDeviceEx(comm)
+{
+}
+
+/*! \brief Constructs a standalone MtDevice based on \a master and \a childDeviceId
+*/
+MtDevice::MtDevice(XsDevice* master, const XsDeviceId& childDeviceId)
+	: XsDeviceEx(master, childDeviceId)
 {
 }
 
@@ -311,10 +285,11 @@ bool MtDevice::canDoOrientationResetInFirmware(XsResetMethod method)
 /*! \copybrief XsDevice::scheduleOrientationReset */
 bool MtDevice::scheduleOrientationReset(XsResetMethod method)
 {
-	switch (deviceState()) //lint !e788
-	{
+	switch (deviceState())	{
 		case XDS_Measurement:
 		case XDS_Recording:
+		case XDS_WaitingForRecordingStart:
+		case XDS_FlushingData:
 			if (method == XRM_StoreAlignmentMatrix)
 				return false;
 
@@ -654,20 +629,32 @@ bool MtDevice::setOnboardFilterProfile(XsString const& profile)
 	return true;
 }
 
-/*! \returns The accelerometer range for this device
-	\details The range is an absolute maximum number. This means that if 100 is returned, the sensor range is (100, -100)
+/*! \copydoc XsDevice::accelerometerRange
 */
 double MtDevice::accelerometerRange() const
 {
-	return ::accelerometerRange(productCode(), hardwareVersion().major());
+	return ::accelerometerRange(deviceId());
 }
 
-/*! \returns The accelerometer range for this device
-	\details The range is an absolute maximum number. This means that if 300 is returned, the sensor range is (300, -300)
+/*! \copydoc XsDevice::actualAccelerometerRange
+*/
+double MtDevice::actualAccelerometerRange() const
+{
+	return ::actualAccelerometerRange(deviceId());
+}
+
+/*! \copydoc XsDevice::gyroscopeRange
 */
 double MtDevice::gyroscopeRange() const
 {
-	return ::gyroscopeRange(productCode());
+	return ::gyroscopeRange(deviceId());
+}
+
+/*! \copydoc XsDevice::actualGyroscopeRange
+*/
+double MtDevice::actualGyroscopeRange() const
+{
+	return ::actualGyroscopeRange(deviceId());
 }
 
 /*! \brief Write the emts of the device to the open logfile
@@ -881,14 +868,15 @@ uint32_t MtDevice::supportedStatusFlags() const
 }
 
 /*!	\brief Helper function to strip the hardware type from the product code
-	\param code A productcode to be stripped
-	\returns Code without the hardware type postfix
+	\param did A deviceId with the productcode to be stripped
+	\returns Product code without the hardware type postfix
 */
-XsString MtDevice::stripProductCode(const XsString& code)
+XsString MtDevice::stripProductCode(const XsDeviceId& did)
 {
-	XsString hwtype = findHardwareType(code);
+	XsString hwtype = findHardwareType(did);
 	if (hwtype.empty())
-		return code;
+		return did.productCode();
+	XsString code = did.productCode();
 
 	ptrdiff_t offset = code.findSubStr(hwtype);
 	while (offset >= 0 && code[(unsigned int)offset] != '-')

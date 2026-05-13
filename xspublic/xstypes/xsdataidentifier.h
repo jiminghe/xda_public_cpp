@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -123,6 +91,8 @@ enum XsDataIdentifier
 	XDI_Quaternion				= 0x2010,	//!< Orientation in quaternion format
 	XDI_RotationMatrix			= 0x2020,	//!< Orientation in rotation matrix format
 	XDI_EulerAngles				= 0x2030,	//!< Orientation in euler angles format
+	XDI_QuaternionStd			= 0x2040,	//!< Orientation uncertainty for quaternion
+	XDI_EulerAnglesStd			= 0x2050,	//!< Orientation uncertainty for euler angles
 
 	XDI_PressureGroup			= 0x3000,	//!< Group for pressure related outputs
 	XDI_BaroPressure			= 0x3010,	//!< Pressure output recorded from the barometer
@@ -143,6 +113,10 @@ enum XsDataIdentifier
 	XDI_AltitudeEllipsoid		= 0x5020,	//!< Altitude at ellipsoid
 	XDI_PositionEcef			= 0x5030,	//!< Position in earth-centered, earth-fixed format
 	XDI_LatLon					= 0x5040,	//!< Position in latitude, longitude
+
+	XDI_MaritimeMotionGroup		= 0x6000,	//!< Group for maritime motion related outputs
+	XDI_HeavePosition			= 0x6010,	//!< Heave position in meters
+	XDI_HeavePeriod				= 0x6020,	//!< Heave period in seconds
 
 	XDI_GnssGroup				= 0x7000,	//!< Group for Gnss related outputs
 	XDI_GnssPvtData				= 0x7010,	//!< Gnss position, velocity and time data
@@ -165,6 +139,7 @@ enum XsDataIdentifier
 	XDI_RawDeltaQ				= 0xA060,	//!< Raw deltaQ SDI data
 	XDI_RawDeltaV				= 0xA070,	//!< Raw deltaV SDI data
 	XDI_RawBlob					= 0xA080,	//!< Raw blob data
+	XDI_RawFloatAccGyrMagTemp	= 0xA090,	//!< Raw acceleration, gyroscope, magnetometer and temperature data in floating point format
 
 	XDI_AnalogInGroup			= 0xB000,	//!< Group for analog in related outputs
 	XDI_AnalogIn1				= 0xB010,	//!< Data containing adc data from analog in 1 line (if present)

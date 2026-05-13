@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -177,6 +145,59 @@ inline static bool anyMagClipped(int status)
 	return 0 != (status & (XSF_ClipMagX | XSF_ClipMagY | XSF_ClipMagZ));
 }
 
+//! Return if the Accelerometer X channel clipped
+inline static bool accClippedX(int status)
+{
+	return 0 != (status & XSF_ClipAccX);
+}
+
+//! Return if the Accelerometer Y channel clipped
+inline static bool accClippedY(int status)
+{
+	return 0 != (status & XSF_ClipAccY);
+}
+
+//! Return if the Accelerometer Z channel clipped
+inline static bool accClippedZ(int status)
+{
+	return 0 != (status & XSF_ClipAccZ);
+}
+
+//! Return if the Gyroscope X channel clipped
+inline static bool gyrClippedX(int status)
+{
+	return 0 != (status & XSF_ClipGyrX);
+}
+
+//! Return if the Gyroscope Y channel clipped
+inline static bool gyrClippedY(int status)
+{
+	return 0 != (status & XSF_ClipGyrY);
+}
+
+//! Return if the Gyroscope Z channel clipped
+inline static bool gyrClippedZ(int status)
+{
+	return 0 != (status & XSF_ClipGyrZ);
+}
+
+//! Return if the Magnetometer X channel clipped
+inline static bool magClippedX(int status)
+{
+	return 0 != (status & XSF_ClipMagX);
+}
+
+//! Return if the Magnetometer Y channel clipped
+inline static bool magClippedY(int status)
+{
+	return 0 != (status & XSF_ClipMagY);
+}
+
+//! Return if the Magnetometer Z channel clipped
+inline static bool magClippedZ(int status)
+{
+	return 0 != (status & XSF_ClipMagZ);
+}
 
 //! \brief Status object.
 class XsStatus
@@ -235,7 +256,7 @@ public:
 		\param a The Status object to copy from
 		\return A reference to this object
 	*/
-	inline XsStatus const& operator = (XsStatus const& a)
+	inline XsStatus& operator = (XsStatus const& a)
 	{
 		m_status = a.m_status;
 		return *this;
@@ -245,7 +266,7 @@ public:
 		\param a The full status flags to set
 		\return A reference to this object
 	*/
-	inline XsStatus const& operator = (int a)
+	inline XsStatus& operator = (int a)
 	{
 		m_status = (uint32_t)(a & 0x1FFFF);
 		return *this;
@@ -307,6 +328,60 @@ public:
 	inline bool anyMagClipped() const
 	{
 		return ::anyMagClipped((int)m_status);
+	}
+
+	//! Return if the Accelerometer X channel clipped
+	inline bool accClippedX() const
+	{
+		return ::accClippedX((int)m_status);
+	}
+
+	//! Return if the Accelerometer Y channel clipped
+	inline bool accClippedY() const
+	{
+		return ::accClippedY((int)m_status);
+	}
+
+	//! Return if the Accelerometer Z channel clipped
+	inline bool accClippedZ() const
+	{
+		return ::accClippedZ((int)m_status);
+	}
+
+	//! Return if the Gyroscope X channel clipped
+	inline bool gyrClippedX() const
+	{
+		return ::gyrClippedX((int)m_status);
+	}
+
+	//! Return if the Gyroscope Y channel clipped
+	inline bool gyrClippedY() const
+	{
+		return ::gyrClippedY((int)m_status);
+	}
+
+	//! Return if the Gyroscope Z channel clipped
+	inline bool gyrClippedZ() const
+	{
+		return ::gyrClippedZ((int)m_status);
+	}
+
+	//! Return if the Magnetometer X channel clipped
+	inline bool magClippedX() const
+	{
+		return ::magClippedX((int)m_status);
+	}
+
+	//! Return if the Magnetometer Y channel clipped
+	inline bool magClippedY() const
+	{
+		return ::magClippedY((int)m_status);
+	}
+
+	//! Return if the Magnetometer Z channel clipped
+	inline bool magClippedZ() const
+	{
+		return ::magClippedZ((int)m_status);
 	}
 
 	//! Clear status object

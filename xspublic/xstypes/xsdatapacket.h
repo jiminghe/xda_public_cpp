@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -72,6 +40,7 @@
 #include "xsdataidentifier.h"
 #include "xsushortvector.h"
 #include "xsscrdata.h"
+#include "xsscrdatafloat.h"
 #include "xscalibrateddata.h"
 #include "xspressure.h"
 #include "xssdidata.h"
@@ -87,6 +56,8 @@
 #include "xsrange.h"
 #include "xstriggerindicationdata.h"
 #include "xssnapshot.h"
+#include "xsglovesnapshot.h"
+#include "xsglovedata.h"
 #include "xshandid.h"
 
 #ifndef XSNOEXPORT
@@ -138,6 +109,17 @@ XSTYPES_DLL_API void XsDataPacket_setRawTemperature(XsDataPacket* thisPtr, uint1
 XSTYPES_DLL_API XsScrData* XsDataPacket_rawData(const XsDataPacket* thisPtr, XsScrData* returnVal);
 XSTYPES_DLL_API int XsDataPacket_containsRawData(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API void XsDataPacket_setRawData(XsDataPacket* thisPtr, const XsScrData* data);
+XSTYPES_DLL_API XsFloatVector3* XsDataPacket_rawAccelerationFloat(const XsDataPacket* thisPtr, XsFloatVector3* returnVal);
+XSTYPES_DLL_API int XsDataPacket_containsRawAccelerationFloat(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API XsFloatVector3* XsDataPacket_rawGyroscopeDataFloat(const XsDataPacket* thisPtr, XsFloatVector3* returnVal);
+XSTYPES_DLL_API int XsDataPacket_containsRawGyroscopeDataFloat(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API XsFloatVector3* XsDataPacket_rawMagneticFieldFloat(const XsDataPacket* thisPtr, XsFloatVector3* returnVal);
+XSTYPES_DLL_API int XsDataPacket_containsRawMagneticFieldFloat(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API float XsDataPacket_rawTemperatureFloat(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API int XsDataPacket_containsRawTemperatureFloat(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API XsScrDataFloat* XsDataPacket_rawDataFloat(const XsDataPacket* thisPtr, XsScrDataFloat* returnVal);
+XSTYPES_DLL_API int XsDataPacket_containsRawDataFloat(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API void XsDataPacket_setRawDataFloat(XsDataPacket* thisPtr, const XsScrDataFloat* data);
 XSTYPES_DLL_API XsVector* XsDataPacket_velocityIncrement(const XsDataPacket* thisPtr, XsVector* returnVal);
 XSTYPES_DLL_API int XsDataPacket_containsVelocityIncrement(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API void XsDataPacket_setVelocityIncrement(XsDataPacket* thisPtr, const XsVector* vec);
@@ -166,11 +148,20 @@ XSTYPES_DLL_API void XsDataPacket_setOrientationEuler(XsDataPacket* thisPtr, con
 XSTYPES_DLL_API XsMatrix* XsDataPacket_orientationMatrix(const XsDataPacket* thisPtr, XsMatrix* returnVal, XsDataIdentifier coordinateSystem);
 XSTYPES_DLL_API void XsDataPacket_setOrientationMatrix(XsDataPacket* thisPtr, const XsMatrix* data, XsDataIdentifier coordinateSystem);
 XSTYPES_DLL_API int XsDataPacket_containsOrientation(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API XsVector* XsDataPacket_orientationQuaternionStd(const XsDataPacket* thisPtr, XsVector* returnVal);
+XSTYPES_DLL_API void XsDataPacket_setOrientationQuaternionStd(XsDataPacket* thisPtr, const XsVector* data);
+XSTYPES_DLL_API XsVector* XsDataPacket_orientationEulerStd(const XsDataPacket* thisPtr, XsVector* returnVal);
+XSTYPES_DLL_API void XsDataPacket_setOrientationEulerStd(XsDataPacket* thisPtr, const XsVector* data);
+XSTYPES_DLL_API int XsDataPacket_containsOrientationQuaternionStd(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API int XsDataPacket_containsOrientationEulerStd(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API XsDataIdentifier XsDataPacket_orientationIdentifier(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API XsDataIdentifier XsDataPacket_coordinateSystemOrientation(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API XsSdiData* XsDataPacket_sdiData(const XsDataPacket* thisPtr, XsSdiData* returnVal);
 XSTYPES_DLL_API int XsDataPacket_containsSdiData(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API void XsDataPacket_setSdiData(XsDataPacket* thisPtr, const XsSdiData* data);
+XSTYPES_DLL_API XsGloveData* XsDataPacket_gloveData(const XsDataPacket* thisPtr, XsGloveData* returnVal, XsHandId hand);
+XSTYPES_DLL_API int XsDataPacket_containsGloveData(const XsDataPacket* thisPtr, XsHandId hand);
+XSTYPES_DLL_API void XsDataPacket_setGloveData(XsDataPacket* thisPtr, const XsGloveData* data, XsHandId hand);
 XSTYPES_DLL_API XsDeviceId* XsDataPacket_storedDeviceId(const XsDataPacket* thisPtr, XsDeviceId* returnVal);
 XSTYPES_DLL_API int XsDataPacket_containsStoredDeviceId(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API void XsDataPacket_setStoredDeviceId(XsDataPacket* thisPtr, const XsDeviceId* data);
@@ -210,6 +201,12 @@ XSTYPES_DLL_API int XsDataPacket_containsPressure(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API XsPressure* XsDataPacket_pressure(const XsDataPacket* thisPtr, XsPressure* returnVal);
 XSTYPES_DLL_API int XsDataPacket_containsPressureAge(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API void XsDataPacket_setPressure(XsDataPacket* thisPtr, const XsPressure* data);
+XSTYPES_DLL_API double XsDataPacket_heavePosition(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API int XsDataPacket_containsHeavePosition(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API void XsDataPacket_setHeavePosition(XsDataPacket* thisPtr, double heavePos);
+XSTYPES_DLL_API double XsDataPacket_heavePeriod(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API int XsDataPacket_containsHeavePeriod(const XsDataPacket* thisPtr);
+XSTYPES_DLL_API void XsDataPacket_setHeavePeriod(XsDataPacket* thisPtr, double heavePeriod);
 XSTYPES_DLL_API XsAnalogInData* XsDataPacket_analogIn1Data(const XsDataPacket* thisPtr, XsAnalogInData* returnVal);
 XSTYPES_DLL_API int XsDataPacket_containsAnalogIn1Data(const XsDataPacket* thisPtr);
 XSTYPES_DLL_API void XsDataPacket_setAnalogIn1Data(XsDataPacket* thisPtr, const XsAnalogInData* data);
@@ -270,6 +267,10 @@ XSTYPES_DLL_API int XsDataPacket_isAwindaSnapshotARetransmission(const XsDataPac
 XSTYPES_DLL_API void XsDataPacket_setFullSnapshot(XsDataPacket* thisPtr, XsSnapshot const* data, int retransmission);
 XSTYPES_DLL_API XsSnapshot* XsDataPacket_fullSnapshot(const XsDataPacket* thisPtr, XsSnapshot* returnVal);
 XSTYPES_DLL_API int XsDataPacket_containsFullSnapshot(const XsDataPacket* thisPtr);
+
+XSTYPES_DLL_API void XsDataPacket_setGloveSnapshot(XsDataPacket* thisPtr, XsGloveSnapshot const* data, int retransmission, XsHandId hand);
+XSTYPES_DLL_API XsGloveSnapshot* XsDataPacket_gloveSnapshot(const XsDataPacket* thisPtr, XsGloveSnapshot* returnVal, XsHandId hand);
+XSTYPES_DLL_API int XsDataPacket_containsGloveSnapshot(const XsDataPacket* thisPtr, XsHandId hand);
 
 XSTYPES_DLL_API void XsDataPacket_setRawBlob(XsDataPacket* thisPtr, const XsByteArray* data);
 XSTYPES_DLL_API XsByteArray* XsDataPacket_rawBlob(const XsDataPacket* thisPtr, XsByteArray* returnVal);
@@ -522,6 +523,57 @@ struct XsDataPacket
 		XsDataPacket_setRawTemperature(this, temp);
 	}
 
+	/*! \brief \copybrief XsDataPacket_rawAccelerationFloat(const XsDataPacket*, XsFloatVector3*) */
+	inline XsFloatVector3 rawAccelerationFloat(void) const
+	{
+		XsFloatVector3 returnVal;
+		return *XsDataPacket_rawAccelerationFloat(this, &returnVal);
+	}
+
+	/*! \copydoc XsDataPacket_containsRawAccelerationFloat(const XsDataPacket*) */
+	inline bool containsRawAccelerationFloat(void) const
+	{
+		return 0 != XsDataPacket_containsRawAccelerationFloat(this);
+	}
+
+	/*! \brief \copybrief XsDataPacket_rawGyroscopeDataFloat(const XsDataPacket*, XsFloatVector3*) */
+	inline XsFloatVector3 rawGyroscopeDataFloat(void) const
+	{
+		XsFloatVector3 returnVal;
+		return *XsDataPacket_rawGyroscopeDataFloat(this, &returnVal);
+	}
+
+	/*! \copydoc XsDataPacket_containsRawGyroscopeDataFloat(const XsDataPacket*) */
+	inline bool containsRawGyroscopeDataFloat(void) const
+	{
+		return 0 != XsDataPacket_containsRawGyroscopeDataFloat(this);
+	}
+
+	/*! \brief \copybrief XsDataPacket_rawMagneticFieldFloat(const XsDataPacket*, XsFloatVector3*) */
+	inline XsFloatVector3 rawMagneticFieldFloat(void) const
+	{
+		XsFloatVector3 returnVal;
+		return *XsDataPacket_rawMagneticFieldFloat(this, &returnVal);
+	}
+
+	/*! \copydoc XsDataPacket_containsRawMagneticFieldFloat(const XsDataPacket*) */
+	inline bool containsRawMagneticFieldFloat(void) const
+	{
+		return 0 != XsDataPacket_containsRawMagneticFieldFloat(this);
+	}
+
+	/*! \brief \copybrief XsDataPacket_rawTemperatureFloat(const XsDataPacket*) */
+	inline float rawTemperatureFloat(void) const
+	{
+		return XsDataPacket_rawTemperatureFloat(this);
+	}
+
+	/*! \copydoc XsDataPacket_containsRawTemperatureFloat(const XsDataPacket*) */
+	inline bool containsRawTemperatureFloat(void) const
+	{
+		return 0 != XsDataPacket_containsRawTemperatureFloat(this);
+	}
+
 	/*! \brief \copybrief XsDataPacket_rawData(const XsDataPacket*, XsScrData*)
 		\return The raw data component of a data item.
 	*/
@@ -541,6 +593,27 @@ struct XsDataPacket
 	inline void setRawData(const XsScrData& data)
 	{
 		XsDataPacket_setRawData(this, &data);
+	}
+
+	/*! \brief \copybrief XsDataPacket_rawDataFloat(const XsDataPacket*, XsScrDataFloat*)
+		\return The raw data component of a data item.
+	*/
+	inline XsScrDataFloat rawDataFloat(void) const
+	{
+		XsScrDataFloat returnVal;
+		return *XsDataPacket_rawDataFloat(this, &returnVal);
+	}
+
+	/*! \copydoc XsDataPacket_containsRawData(const XsDataPacket*) */
+	inline bool containsRawDataFloat(void) const
+	{
+		return 0 != XsDataPacket_containsRawDataFloat(this);
+	}
+
+	/*! \copydoc XsDataPacket_setRawDataFloat(XsDataPacket*, const XsScrDataFloat*) */
+	inline void setRawDataFloat(const XsScrDataFloat& data)
+	{
+		XsDataPacket_setRawDataFloat(this, &data);
 	}
 
 	/*! \brief \copybrief XsDataPacket_velocityIncrement(const XsDataPacket*, XsVector*) */
@@ -701,6 +774,20 @@ struct XsDataPacket
 		XsDataPacket_setOrientationQuaternion(this, &data, coordinateSystem);
 	}
 
+	/*! \brief Returns the orientation uncertainty as a vector
+	*/
+	inline XsVector orientationQuaternionStd() const
+	{
+		XsVector returnVal;
+		return *XsDataPacket_orientationQuaternionStd(this, &returnVal);
+	}
+
+	/*! \copydoc XsDataPacket_setOrientationQuaternionStd(XsDataPacket*, const XsVector*) */
+	inline void setOrientationQuaternionStd(const XsVector& data)
+	{
+		XsDataPacket_setOrientationQuaternionStd(this, &data);
+	}
+
 	/*! \brief \copybrief XsDataPacket_orientationEuler(const XsDataPacket*, XsEuler*, XsDataIdentifier)
 		\param coordinateSystem The coordinate system of the requested orientation. If this does not match
 				the stored coordinate system, it will be transformed to the requested orientation.
@@ -723,6 +810,19 @@ struct XsDataPacket
 	inline void setOrientationEuler(const XsEuler& data, XsDataIdentifier coordinateSystem)
 	{
 		XsDataPacket_setOrientationEuler(this, &data, coordinateSystem);
+	}
+
+	/*! \brief Returns the orientation uncertainty as an XsVector*/
+	inline XsVector orientationEulerStd() const
+	{
+		XsVector returnVal;
+		return *XsDataPacket_orientationEulerStd(this, &returnVal);
+	}
+
+	/*! \copydoc XsDataPacket_setOrientationEulerStd(XsDataPacket*, const XsVector*) */
+	inline void setOrientationEulerStd(const XsVector& data)
+	{
+		XsDataPacket_setOrientationEulerStd(this, &data);
 	}
 
 	/*! \brief \copybrief XsDataPacket_orientationMatrix(const XsDataPacket*, XsMatrix*, XsDataIdentifier)
@@ -755,6 +855,18 @@ struct XsDataPacket
 		return 0 != XsDataPacket_containsOrientation(this);
 	}
 
+	/*! \copydoc XsDataPacket_containsOrientationQuaternionStd(const XsDataPacket*) */
+	inline bool containsOrientationQuaternionStd(void) const
+	{
+		return 0 != XsDataPacket_containsOrientationQuaternionStd(this);
+	}
+
+	/*! \copydoc XsDataPacket_containsOrientationEulerStd(const XsDataPacket*) */
+	inline bool containsOrientationEulerStd(void) const
+	{
+		return 0 != XsDataPacket_containsOrientationEulerStd(this);
+	}
+
 	/*! \copydoc XsDataPacket_orientationIdentifier(const XsDataPacket*) */
 	inline XsDataIdentifier orientationIdentifier() const
 	{
@@ -784,6 +896,25 @@ struct XsDataPacket
 	inline void setSdiData(const XsSdiData& data)
 	{
 		XsDataPacket_setSdiData(this, &data);
+	}
+
+	/*! \brief \copybrief XsDataPacket_gloveData(const XsDataPacket*, XsGloveData*, XsHandId) */
+	XSNOCOMEXPORT inline XsGloveData gloveData(XsHandId hand) const
+	{
+		XsGloveData returnVal;
+		return *XsDataPacket_gloveData(this, &returnVal, hand);
+	}
+
+	/*! \copydoc XsDataPacket_containsGloveData(const XsDataPacket*, XsHandId) */
+	XSNOCOMEXPORT inline bool containsGloveData(XsHandId hand = XHI_Unknown) const
+	{
+		return 0 != XsDataPacket_containsGloveData(this, hand);
+	}
+
+	/*! \copydoc XsDataPacket_setGloveData(XsDataPacket*, const XsGloveData*, XsHandId) */
+	XSNOEXPORT inline void setGloveData(const XsGloveData& data, XsHandId hand)
+	{
+		XsDataPacket_setGloveData(this, &data, hand);
 	}
 
 	/*! \brief \copybrief XsDataPacket_storedDeviceId(const XsDataPacket*, XsDeviceId*)
@@ -1026,6 +1157,42 @@ struct XsDataPacket
 	inline void setPressure(const XsPressure& data)
 	{
 		XsDataPacket_setPressure(this, &data);
+	}
+
+	/*! \brief \copybrief XsDataPacket_heavePosition(const XsDataPacket*) */
+	inline double heavePosition(void) const
+	{
+		return XsDataPacket_heavePosition(this);
+	}
+
+	/*! \copydoc XsDataPacket_containsHeavePosition(const XsDataPacket*) */
+	inline bool containsHeavePosition(void) const
+	{
+		return 0 != XsDataPacket_containsHeavePosition(this);
+	}
+
+	/*! \copydoc XsDataPacket_setHeavePosition(XsDataPacket*, double) */
+	inline void setHeavePosition(double heavePos)
+	{
+		XsDataPacket_setHeavePosition(this, heavePos);
+	}
+
+	/*! \brief \copybrief XsDataPacket_heavePeriod(const XsDataPacket*) */
+	inline double heavePeriod(void) const
+	{
+		return XsDataPacket_heavePeriod(this);
+	}
+
+	/*! \copydoc XsDataPacket_containsHeavePeriod(const XsDataPacket*) */
+	inline bool containsHeavePeriod(void) const
+	{
+		return 0 != XsDataPacket_containsHeavePeriod(this);
+	}
+
+	/*! \copydoc XsDataPacket_setHeavePeriod(XsDataPacket*, double) */
+	inline void setHeavePeriod(double period)
+	{
+		XsDataPacket_setHeavePeriod(this, period);
 	}
 
 	/*! \brief \copybrief XsDataPacket_analogIn1Data(const XsDataPacket*, XsAnalogInData*) */
@@ -1361,6 +1528,25 @@ struct XsDataPacket
 	inline bool isAwindaSnapshotARetransmission(void) const
 	{
 		return 0 != XsDataPacket_isAwindaSnapshotARetransmission(this);
+	}
+
+	/*! \brief \copybrief XsDataPacket_gloveSnapshot(const XsDataPacket*, XsGloveSnapshot*, XsHandId) */
+	XSNOEXPORT inline XsGloveSnapshot gloveSnapshot(XsHandId hand) const
+	{
+		XsGloveSnapshot returnVal;
+		return *XsDataPacket_gloveSnapshot(this, &returnVal, hand);
+	}
+
+	/*! \brief \copybrief XsDataPacket_containsGloveSnapshot(const XsDataPacket*, XsHandId) */
+	XSNOEXPORT inline bool containsGloveSnapshot(XsHandId hand = XHI_Unknown) const
+	{
+		return 0 != XsDataPacket_containsGloveSnapshot(this, hand);
+	}
+
+	/*! \copydoc XsDataPacket_setGloveSnapshot(XsDataPacket*, XsGloveSnapshot const *, int, XsHandId) */
+	XSNOEXPORT inline void setGloveSnapshot(XsGloveSnapshot const& data, bool retransmission, XsHandId hand)
+	{
+		XsDataPacket_setGloveSnapshot(this, &data, retransmission ? 1 : 0, hand);
 	}
 
 	/*! \copydoc XsDataPacket_merge(XsDataPacket*, const XsDataPacket*, int) */

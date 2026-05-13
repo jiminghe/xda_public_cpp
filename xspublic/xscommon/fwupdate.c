@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -67,7 +35,7 @@
 #include "xbus.h"
 
 #ifndef LOG
-	#define LOG(...)
+	#define LOG(...)	((void) 0)
 #endif
 
 #define XMID_FIRMWARE_UPDATE (0xF2)
@@ -339,6 +307,16 @@ static void enterNewSection(FwUpdate* thisPtr)
 {
 	LOG("\nFwu: enterNewSection()\n");
 	readXffHeader(thisPtr);
+	if (thisPtr->m_endOfFile)
+	{
+		LOG("Fwu: End of file during section header read --> Firmware update done\n");
+		sendFinished(thisPtr);
+		thisPtr->m_state = STATE_Idle;
+		thisPtr->m_readyHandler(FWU_Success);
+		return;
+	}
+	// Note: a corrupt xff with pageSize==0 or sliceSize==0 would cause division by zero here,
+	// but we control xff creation and distribution so this is not a realistic scenario.
 	thisPtr->m_nofPages = thisPtr->m_xffHeader.m_sectionSize / ((uint32_t)thisPtr->m_xffHeader.m_pageSize + (uint32_t)thisPtr->m_xffHeader.m_addressLength);
 	thisPtr->m_nofSlicesPerPage = thisPtr->m_xffHeader.m_pageSize / thisPtr->m_xffHeader.m_sliceSize;
 	thisPtr->m_pageCounter = 0;
@@ -405,7 +383,8 @@ void FwUpdate_handleXbus(FwUpdate* thisPtr, uint8_t const* xbusMessage)
 			{
 				LOG("Fwu: FWUP_READY in STATE_Start --> Enter new section\n");
 				enterNewSection(thisPtr);
-				thisPtr->m_state = STATE_WaitReady;
+				if (thisPtr->m_state != STATE_Idle)
+					thisPtr->m_state = STATE_WaitReady;
 			}
 			else
 				LOG("Fwu: Got %s in STATE_Start (ignored)\n", ackToString(ack));
@@ -497,7 +476,8 @@ void FwUpdate_handleXbus(FwUpdate* thisPtr, uint8_t const* xbusMessage)
 				{
 					LOG("Fwu: All pages sent --> Enter new section\n");
 					enterNewSection(thisPtr);
-					thisPtr->m_state = STATE_WaitReady;
+					if (thisPtr->m_state != STATE_Idle)
+						thisPtr->m_state = STATE_WaitReady;
 				}
 				else
 				{

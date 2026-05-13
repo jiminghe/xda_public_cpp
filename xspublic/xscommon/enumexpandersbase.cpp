@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -64,8 +32,7 @@
 
 #include "enumexpandersbase.h"
 
-extern Journaller* gJournal;	//lint !e752
-
+extern Journaller* gJournal;
 JLENUMEXPANDER(XsResultValue,
 	JLENUMCASE(XRV_OK) //!< 0: Operation was performed successfully
 
@@ -125,7 +92,7 @@ JLENUMEXPANDER(XsResultValue,
 	JLENUMCASE(XRV_COULDNOTREADSETTINGS) //!< 271: A required settings file could not be opened or is missing some data
 	JLENUMCASE(XRV_NODATA) //!< 272: No data is available
 	JLENUMCASE(XRV_READONLY) //!< 273: Tried to change a read-only value
-	JLENUMCASE(XRV_NULLPTR) //!< 274: Tried to supply a NULL value where it is not allowed
+	JLENUMCASE(XRV_NULLPTR) //!< 274: Tried to supply a nullptr value where it is not allowed
 	JLENUMCASE(XRV_INSUFFICIENTDATA) //!< 275: Insufficient data was supplied to a function
 	JLENUMCASE(XRV_BUSY) //!< 276: Busy processing, try again later
 	JLENUMCASE(XRV_INVALIDINSTANCE) //!< 277: Invalid instance called, because of an invalid or missing license

@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -205,21 +173,30 @@ int XsDeviceId_isMti6X0(const struct XsDeviceId* thisPtr)
 	}
 }
 
-/*! \brief Test if the device ID represents an MTi-800 series device
-	\returns true if this XsDeviceId represents an Mti-800 series device
+/*! \brief Test if the device ID represents an Avior device
+	\returns true if this XsDeviceId represents an Avior device
 */
-int XsDeviceId_isMti8X0(const struct XsDeviceId* thisPtr)
+int XsDeviceId_isAvior(const struct XsDeviceId* thisPtr)
 {
 	if (XsDeviceId_isLegacyDeviceId(thisPtr))
 		return 0;
-	else
-	{
-		if (memcmp(thisPtr->m_productCode, "MTi-", 4) != 0)
-			return 0;
+	else if (thisPtr->m_productCode[0] == 'A')
+		return 1;
 
-		int deviceFamily = atoi(&thisPtr->m_productCode[4]);
-		return ((deviceFamily != 0) && ((deviceFamily > 800) && (deviceFamily < 900)));
-	}
+	return 0;
+}
+
+/*! \brief Test if the device ID represents an Sirius device
+	\returns true if this XsDeviceId represents an Sirius device
+*/
+int XsDeviceId_isSirius(const struct XsDeviceId* thisPtr)
+{
+	if (XsDeviceId_isLegacyDeviceId(thisPtr))
+		return 0;
+	else if (thisPtr->m_productCode[0] == 'S')
+		return 1;
+
+	return 0;
 }
 
 /*! \brief Test if the device ID represents an MTi-3X0 device
@@ -294,7 +271,7 @@ int XsDeviceId_isDot(struct XsDeviceId const* thisPtr)
 		return 0;
 	else
 	{
-		if (memcmp(thisPtr->m_productCode, "XS-", 3) != 0)
+		if (memcmp(thisPtr->m_productCode, "XS-T0", 5) != 0)
 			return 0;
 
 		return 1;
@@ -306,9 +283,14 @@ int XsDeviceId_isDot(struct XsDeviceId const* thisPtr)
 */
 int XsDeviceId_isRugged(struct XsDeviceId const* thisPtr)
 {
-	if (XsDeviceId_isMti6X0(thisPtr) || XsDeviceId_isMti8X0(thisPtr))
+	if (XsDeviceId_isMti6X0(thisPtr))
 	{
 		if (thisPtr->m_productCode[7] == 'R' || thisPtr->m_productCode[7] == 'G')
+			return 1;
+	}
+	else if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if (thisPtr->m_productCode[5] == 'A' || thisPtr->m_productCode[5] == 'B')
 			return 1;
 	}
 	return 0;
@@ -320,13 +302,18 @@ int XsDeviceId_isRugged(struct XsDeviceId const* thisPtr)
 */
 int XsDeviceId_hasInternalGnss(struct XsDeviceId const* thisPtr)
 {
-	if (XsDeviceId_isMti6X0(thisPtr) || XsDeviceId_isMti8X0(thisPtr))
+	if (XsDeviceId_isMti6X0(thisPtr))
 	{
 		if (thisPtr->m_productCode[7] == 'G')
 			return 1;
 	}
 	if (XsDeviceId_isMtigX10(thisPtr))
 		return 1;
+	if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if ((thisPtr->m_productCode[2] == 'G' || thisPtr->m_productCode[2] == 'R') && XsDeviceId_isRugged(thisPtr))
+			return 1;
+	}
 	return 0;
 
 }
@@ -375,6 +362,28 @@ int XsDeviceId_isMtx2(const struct XsDeviceId* thisPtr)
 		return XS_DID_MTX2(thisPtr->m_deviceId);
 	else
 		return (memcmp(thisPtr->m_productCode, "MTx2", 4) == 0);
+}
+
+/*! \brief Test if this device ID represents an MTx3
+	\returns true if this XsDeviceId represents an MTx3
+*/
+int XsDeviceId_isMtx3(const struct XsDeviceId* thisPtr)
+{
+	if (XsDeviceId_isLegacyDeviceId(thisPtr))
+		return 0;
+	else
+		return (memcmp(thisPtr->m_productCode, "XSL-MTX3", 8) == 0);
+}
+
+/*! \brief Test if this device ID represents a bodyhub device.
+	\returns true if this XsDeviceId represents a bodyhub device
+*/
+int XsDeviceId_isBodyHub(const struct XsDeviceId* thisPtr)
+{
+	if (XsDeviceId_isLegacyDeviceId(thisPtr))
+		return 0;
+	else
+		return (memcmp(thisPtr->m_productCode, "XS-HUB", 6) == 0);
 }
 
 /*! \brief Test if this device ID represents a bodypack (any version) device.
@@ -545,6 +554,11 @@ int XsDeviceId_isImu(const struct XsDeviceId* thisPtr)
 				((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_100) ||
 				((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_310));
 	}
+	else if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if (thisPtr->m_productCode[2] == 'M')
+			return 1;
+	}
 	else
 	{
 		if (memcmp(thisPtr->m_productCode, "MTi-", 4) != 0)
@@ -554,11 +568,12 @@ int XsDeviceId_isImu(const struct XsDeviceId* thisPtr)
 		if (deviceFamily == 0)
 			return 0;
 
-		if (deviceFamily == 6 || deviceFamily == 8)
+		if (deviceFamily == 6 || deviceFamily == 8 || deviceFamily == 9)
 			deviceFamily = thisPtr->m_productCode[5] - '0';
 
 		return (deviceFamily == 1);
 	}
+	return 0;
 }
 
 /*! \brief Test if this device ID represents a VRU.
@@ -573,6 +588,11 @@ int XsDeviceId_isVru(const struct XsDeviceId* thisPtr)
 				((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_200) ||
 				((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_320));
 	}
+	else if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if (thisPtr->m_productCode[2] == 'V')
+			return 1;
+	}
 	else
 	{
 		if (memcmp(thisPtr->m_productCode, "MTi-", 4) != 0)
@@ -582,11 +602,12 @@ int XsDeviceId_isVru(const struct XsDeviceId* thisPtr)
 		if (deviceFamily == 0)
 			return 0;
 
-		if (deviceFamily == 6 || deviceFamily == 8)
+		if (deviceFamily == 6 || deviceFamily == 8 || deviceFamily == 9)
 			deviceFamily = thisPtr->m_productCode[5] - '0';
 
 		return (deviceFamily == 2);
 	}
+	return 0;
 }
 
 /*! \brief Test if this device ID represents an AHRS.
@@ -601,6 +622,11 @@ int XsDeviceId_isAhrs(const struct XsDeviceId* thisPtr)
 				((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_300) ||
 				((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_330));
 	}
+	else if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if (thisPtr->m_productCode[2] == 'A')
+			return 1;
+	}
 	else
 	{
 		if (memcmp(thisPtr->m_productCode, "MTi-", 4) != 0)
@@ -610,11 +636,12 @@ int XsDeviceId_isAhrs(const struct XsDeviceId* thisPtr)
 		if (deviceFamily == 0)
 			return 0;
 
-		if (deviceFamily == 6 || deviceFamily == 8)
+		if (deviceFamily == 6 || deviceFamily == 8 || deviceFamily == 9)
 			deviceFamily = thisPtr->m_productCode[5] - '0';
 
 		return (deviceFamily == 3);
 	}
+	return 0;
 }
 
 /*! \brief Test if this device ID represents an GNSS (capable) device.
@@ -628,6 +655,11 @@ int XsDeviceId_isGnss(const struct XsDeviceId* thisPtr)
 				((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_7_MPU)
 				||(thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_8_MPU);
 	}
+	else if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if (thisPtr->m_productCode[2] == 'G' || thisPtr->m_productCode[2] == 'R')
+			return 1;
+	}
 	else
 	{
 		if (memcmp(thisPtr->m_productCode, "MTi-", 4) != 0)
@@ -636,7 +668,7 @@ int XsDeviceId_isGnss(const struct XsDeviceId* thisPtr)
 		int deviceFamily = atoi(&thisPtr->m_productCode[4]);
 		if (deviceFamily == 7)
 			return 1;
-		else if ((deviceFamily == 670) || (deviceFamily == 680) || (deviceFamily == 870) || (deviceFamily == 880))
+		else if ((deviceFamily == 670) || (deviceFamily == 680))
 			return 1;
 		else
 		{
@@ -647,6 +679,7 @@ int XsDeviceId_isGnss(const struct XsDeviceId* thisPtr)
 			return (deviceFamily == 700 || deviceFamily == 710);
 		}
 	}
+	return 0;
 }
 
 /*! \brief Test if this device ID represents an RTK (capable) device.
@@ -656,14 +689,20 @@ int XsDeviceId_isRtk(const struct XsDeviceId* thisPtr)
 {
 	if (XsDeviceId_isLegacyDeviceId(thisPtr))
 		return ((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_8_MPU);
+	else if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+	{
+		if (thisPtr->m_productCode[2] == 'R')
+			return 1;
+	}
 	else
 	{
 		if (memcmp(thisPtr->m_productCode, "MTi-", 4) != 0)
 			return 0;
 
 		int deviceFamily = atoi(&thisPtr->m_productCode[4]);
-		return ((deviceFamily == 680) || (deviceFamily == 880));
+		return (deviceFamily == 680);
 	}
+	return 0;
 }
 
 /*! \brief Test if this device ID represents any of the container devices such as Bodypack and Awinda Station
@@ -671,7 +710,7 @@ int XsDeviceId_isRtk(const struct XsDeviceId* thisPtr)
 */
 int XsDeviceId_isContainerDevice(const struct XsDeviceId* thisPtr)
 {
-	return XsDeviceId_isBodyPack(thisPtr) || XsDeviceId_isWirelessMaster(thisPtr);
+	return XsDeviceId_isBodyPack(thisPtr) || XsDeviceId_isBodyHub(thisPtr) || XsDeviceId_isWirelessMaster(thisPtr);
 }
 
 /*! \brief Test if this device ID represents an MT device (any Mti, Mtig, Mtx or Mtw)
@@ -687,7 +726,13 @@ int XsDeviceId_isMt(const struct XsDeviceId* thisPtr)
 */
 int XsDeviceId_isMti(const struct XsDeviceId* thisPtr)
 {
-	return (XsDeviceId_isMtiX(thisPtr) || XsDeviceId_isMtiX0(thisPtr) || XsDeviceId_isMtiX00(thisPtr) || XsDeviceId_isMti3X0(thisPtr) || XsDeviceId_isMti6X0(thisPtr) || XsDeviceId_isMti8X0(thisPtr));
+	return (XsDeviceId_isMtiX(thisPtr) ||
+			XsDeviceId_isMtiX0(thisPtr) ||
+			XsDeviceId_isMtiX00(thisPtr) ||
+			XsDeviceId_isMti3X0(thisPtr) ||
+			XsDeviceId_isMti6X0(thisPtr) ||
+			XsDeviceId_isAvior(thisPtr) ||
+			XsDeviceId_isSirius(thisPtr));
 }
 
 /*! \brief Test if this device ID represents an MTig device (700 or 710 series)
@@ -753,13 +798,21 @@ void XsDeviceId_toString(const XsDeviceId* thisPtr, XsString* str)
 */
 void XsDeviceId_fromString(XsDeviceId* thisPtr, const XsString* str)
 {
+	XsSize idx;
 	uint64_t tmp = 0;
 	uint16_t sub = 0;
 	if (!thisPtr || !str || !str->m_data)
 		return;
 
-	if (isalpha(str->m_data[0]))
+	for (idx = 0; idx < str->m_size; ++idx)
+	{
+		char c = str->m_data[idx];
+		if (isxdigit(c))
+			continue;
+		if (c == '/' || c == 0)
+			break;
 		return;
+	}
 
 	int result = sscanf(str->m_data, "%" PRINTF_INT64_MODIFIER "x/%hu", &tmp, &sub);
 	if (result >= 1)
@@ -895,6 +948,10 @@ void XsDeviceId_typeName(XsDeviceId const* thisPtr, XsString* str)
 		XsString_assignCharArray(str, "MTw2");
 	else if (XsDeviceId_isMtx2(thisPtr))
 		XsString_assignCharArray(str, "MTx2");
+	else if (XsDeviceId_isMtx3(thisPtr))
+		XsString_assignCharArray(str, "MTx3");
+	else if (XsDeviceId_isBodyHub(thisPtr))
+		XsString_assignCharArray(str, "Hub");
 	else if (XsDeviceId_isBodyPackV2(thisPtr))
 		XsString_assignCharArray(str, "BPACK-V2");
 	else if (XsDeviceId_isBodyPack(thisPtr))
@@ -902,13 +959,6 @@ void XsDeviceId_typeName(XsDeviceId const* thisPtr, XsString* str)
 	else if (XsDeviceId_isSyncStation2(thisPtr))
 		XsString_assignCharArray(str, "Sync Station v2");
 	else if (XsDeviceId_isMti6X0(thisPtr))
-	{
-		XsSize length = 7;
-		if (thisPtr->m_productCode[7] != '-')
-			length = 8;
-		XsString_assign(str, length, thisPtr->m_productCode);
-	}
-	else if (XsDeviceId_isMti8X0(thisPtr))
 	{
 		XsSize length = 7;
 		if (thisPtr->m_productCode[7] != '-')
@@ -924,40 +974,67 @@ void XsDeviceId_typeName(XsDeviceId const* thisPtr, XsString* str)
 		else if (XsDeviceId_isAhrs(thisPtr))
 			XsString_assignCharArray(str, "MTi-330");
 	}
-	else if (XsDeviceId_isMtiX(thisPtr) && XsDeviceId_isRtk(thisPtr))
-		XsString_assignCharArray(str, "MTi-8");
-	else if (XsDeviceId_isMtMk4_1(thisPtr))
-		XsString_assignCharArray(str, "MTi-1");
-	else if (XsDeviceId_isMtMk4_2(thisPtr))
-		XsString_assignCharArray(str, "MTi-2");
-	else if (XsDeviceId_isMtMk4_3(thisPtr))
-		XsString_assignCharArray(str, "MTi-3");
-	else if (XsDeviceId_isMtMk4_7(thisPtr))
-		XsString_assignCharArray(str, "MTi-7");
-	else if (XsDeviceId_isMtMk4_10(thisPtr))
-		XsString_assignCharArray(str, "MTi-10");
-	else if (XsDeviceId_isMtMk4_20(thisPtr))
-		XsString_assignCharArray(str, "MTi-20");
-	else if (XsDeviceId_isMtMk4_30(thisPtr))
-		XsString_assignCharArray(str, "MTi-30");
-	else if (XsDeviceId_isMtMk4_100(thisPtr))
-		XsString_assignCharArray(str, "MTi-100");
-	else if (XsDeviceId_isMtMk4_200(thisPtr))
-		XsString_assignCharArray(str, "MTi-200");
-	else if (XsDeviceId_isMtMk4_300(thisPtr))
-		XsString_assignCharArray(str, "MTi-300");
-	else if (XsDeviceId_isMtMk4_400(thisPtr))
-		XsString_assignCharArray(str, "MTi-400");
-	else if (XsDeviceId_isMtMk4_500(thisPtr))
-		XsString_assignCharArray(str, "MTi-500");
-	else if (XsDeviceId_isMtMk4_710(thisPtr))
-		XsString_assignCharArray(str, "MTi-G-710");
-	else if (XsDeviceId_isMtMk4_700(thisPtr))
-		XsString_assignCharArray(str, "MTi-G-700");
-	else if (XsDeviceId_isMtMk4_800(thisPtr))
-		XsString_assignCharArray(str, "MTi-G-800");
-	else if (XsDeviceId_isMtMk4_900(thisPtr))
-		XsString_assignCharArray(str, "MTi-G-900");
+	else if (XsDeviceId_isMtiX(thisPtr))
+	{
+		if (XsDeviceId_isImu(thisPtr))
+			XsString_assignCharArray(str, "MTi-1");
+		else if (XsDeviceId_isVru(thisPtr))
+			XsString_assignCharArray(str, "MTi-2");
+		else if (XsDeviceId_isAhrs(thisPtr))
+			XsString_assignCharArray(str, "MTi-3");
+		else if (XsDeviceId_isRtk(thisPtr))
+			XsString_assignCharArray(str, "MTi-8");
+		else if (XsDeviceId_isGnss(thisPtr))
+			XsString_assignCharArray(str, "MTi-7");
+	}
+	else if (XsDeviceId_isMtiX0(thisPtr))
+	{
+		if (XsDeviceId_isImu(thisPtr))
+			XsString_assignCharArray(str, "MTi-10");
+		else if (XsDeviceId_isVru(thisPtr))
+			XsString_assignCharArray(str, "MTi-20");
+		else if (XsDeviceId_isAhrs(thisPtr))
+			XsString_assignCharArray(str, "MTi-30");
+	}
+	else if (XsDeviceId_isMtiX00(thisPtr))
+	{
+		if (XsDeviceId_isImu(thisPtr))
+			XsString_assignCharArray(str, "MTi-100");
+		else if (XsDeviceId_isVru(thisPtr))
+			XsString_assignCharArray(str, "MTi-200");
+		else if (XsDeviceId_isAhrs(thisPtr))
+			XsString_assignCharArray(str, "MTi-300");
+		else if (XsDeviceId_isMtigX10(thisPtr))
+			XsString_assignCharArray(str, "MTi-G-710");
+		else if (XsDeviceId_isMtigX00(thisPtr))
+			XsString_assignCharArray(str, "MTi-G-700");
+	}
+	else if (XsDeviceId_isAvior(thisPtr))
+	{
+		if (XsDeviceId_isImu(thisPtr))
+			XsString_assignCharArray(str, "Xsens Avior IMU");
+		else if (XsDeviceId_isVru(thisPtr))
+			XsString_assignCharArray(str, "Xsens Avior VRU");
+		else if (XsDeviceId_isAhrs(thisPtr))
+			XsString_assignCharArray(str, "Xsens Avior AHRS");
+		else if (XsDeviceId_isGnss(thisPtr))
+			XsString_assignCharArray(str, "Xsens Avior GNSS/INS");
+		else if (XsDeviceId_isRtk(thisPtr))
+			XsString_assignCharArray(str, "Xsens Avior RTK GNSS/INS");
+	}
+	else if (XsDeviceId_isSirius(thisPtr))
+	{
+		if (XsDeviceId_isImu(thisPtr))
+			XsString_assignCharArray(str, "Xsens Sirius IMU");
+		else if (XsDeviceId_isVru(thisPtr))
+			XsString_assignCharArray(str, "Xsens Sirius VRU");
+		else if (XsDeviceId_isAhrs(thisPtr))
+			XsString_assignCharArray(str, "Xsens Sirius AHRS");
+		else if (XsDeviceId_isGnss(thisPtr))
+			XsString_assignCharArray(str, "Xsens Sirius GNSS/INS");
+		else if (XsDeviceId_isRtk(thisPtr))
+			XsString_assignCharArray(str, "Xsens Sirius RTK GNSS/INS");
+	}
 	else if (XsDeviceId_isGlove(thisPtr))
 		XsString_assignCharArray(str, "Glove");
 	else if (XsDeviceId_isMtw2Obskur(thisPtr))
@@ -994,7 +1071,23 @@ void XsDeviceId_deviceType(struct XsDeviceId const* thisPtr, int detailed, struc
 		return;
 	if (!XsDeviceId_isLegacyDeviceId(thisPtr))
 	{
-		if (XsDeviceId_isMti6X0(thisPtr) || XsDeviceId_isMti8X0(thisPtr))
+		if (XsDeviceId_isSirius(thisPtr) || XsDeviceId_isAvior(thisPtr))
+		{
+			type->m_deviceId = XS_DID64_BIT;
+			strncpy(type->m_productCode, thisPtr->m_productCode, 3);
+			type->m_productCode[3] = 0;
+			if (detailed)
+			{
+				type->m_hardwareVersion = thisPtr->m_hardwareVersion;
+				type->m_productVariant = thisPtr->m_productVariant;
+			}
+			else
+			{
+				type->m_hardwareVersion = 0;
+				type->m_productVariant = 0;
+			}
+		}
+		else if (XsDeviceId_isMti6X0(thisPtr))
 		{
 			type->m_deviceId = XS_DID64_BIT;
 			strncpy(type->m_productCode, thisPtr->m_productCode, 7);
@@ -1045,9 +1138,9 @@ void XsDeviceId_deviceTypeMask(struct XsDeviceId const* thisPtr, int detailed, s
 	{
 		if (XsDeviceId_isMti3X0(thisPtr))
 			type->m_deviceId = (XS_DID_TYPEH_MASK | (detailed ? XS_DID_GP_MASK : 0));
-		else if (XsDeviceId_isMtMk4_X(thisPtr))
+		else if (XsDeviceId_isMtiX(thisPtr))
 			type->m_deviceId = (XS_DID_TYPEH_MASK | (detailed ? (XS_DID_GP_MASK | XS_DID_TYPEL_MASK) : 0));
-		else if (XsDeviceId_isMtMk4(thisPtr))
+		else if ((XsDeviceId_isMtiX0(thisPtr)) || (XsDeviceId_isMtiX00(thisPtr)))
 			type->m_deviceId = (XS_DID_TYPEH_MASK | (detailed ? (XS_DID_GP_MASK | XS_DID_TYPEL_MK5) : 0));
 		else if (XsDeviceId_isAwindaX(thisPtr))
 			type->m_deviceId = (XS_DID_TYPEH_MASK | (detailed ? XS_DID_GP_MASK : 0));
@@ -1070,297 +1163,5 @@ uint16_t XsDeviceId_basePart(struct XsDeviceId const* thisPtr)
 {
 	return (uint16_t)(thisPtr->m_deviceId & XS_DID_BASE_ID_MASK);
 }
-
-
-//============================================================================================================
-//============================================================================================================
-//==== Deprecated methods follow                                                                         =====
-//============================================================================================================
-//============================================================================================================
-
-/*! \brief Test if this device ID represents an MTMk4.
-	\returns True if it is an MTMk4.
-	\deprecated If the purpose is to check for a Mk4, Mk5 or 1-series device use: isMti() || isMtig(). If the purpose is to detect actual Mk4 (10,100,7x0) use isMtMark4()
-*/
-int XsDeviceId_isMtMk4(const struct XsDeviceId* thisPtr)
-{
-	return (XsDeviceId_isMtMk4_X(thisPtr) ||
-			XsDeviceId_isMtMk4_X0(thisPtr) ||
-			XsDeviceId_isMtMk4_X00(thisPtr));
-}
-
-/*! \brief Test if this device ID represents an MTMk4 1 series.
-	\returns True if it is an MTMk4 1 series.
-	\deprecated Use isMtiX()
-*/
-int XsDeviceId_isMtMk4_X(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 1.
-	\returns True if it is an MTMk4 1.
-	\deprecated Use isMtiX() and isImu()
-*/
-int XsDeviceId_isMtMk4_1(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX(thisPtr) && XsDeviceId_isImu(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 2.
-	\returns True if it is an MTMk4 2.
-	\deprecated Use isMtiX() and isVru()
-*/
-int XsDeviceId_isMtMk4_2(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX(thisPtr) && XsDeviceId_isVru(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 3.
-	\returns True if it is an MTMk4 3.
-	\deprecated Use isMtiX() and isAhrs()
-*/
-int XsDeviceId_isMtMk4_3(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX(thisPtr) && XsDeviceId_isAhrs(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 7.
-	\returns True if it is an MTMk4 7.
-	\deprecated Use isMtiX(), isGnss(), and !isRtk() together
-*/
-int XsDeviceId_isMtMk4_7(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX(thisPtr) && XsDeviceId_isGnss(thisPtr) && !XsDeviceId_isRtk(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 10 series.
-	\returns True if it is an MTMk4 10 series.
-	\deprecated Use isMtiX0()
-*/
-int XsDeviceId_isMtMk4_X0(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX0(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 10.
-	\returns True if it is an MTMk4 10.
-	\deprecated Use isMtiX0() and isImu()
-*/
-int XsDeviceId_isMtMk4_10(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX0(thisPtr) && XsDeviceId_isImu(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 20.
-	\returns True if it is an MTMk4 20.
-	\deprecated Use isMtiX0() and isVru()
-*/
-int XsDeviceId_isMtMk4_20(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX0(thisPtr) && XsDeviceId_isVru(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 30.
-	\returns True if it is an MTMk4 30.
-	\deprecated Use isMtiX0() and isAhrs()
-*/
-int XsDeviceId_isMtMk4_30(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX0(thisPtr) && XsDeviceId_isAhrs(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 100 series (including 700 and 710)
-	\returns True if it is an MTMk4 100 series.
-	\deprecated Use isMtiX00() || isMtig() to detect all 100's and 7x0's
-*/
-int XsDeviceId_isMtMk4_X00(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX00(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 100.
-	\returns True if it is an MTMk4 100.
-	\deprecated Use isMtiX00() and isImu()
-*/
-int XsDeviceId_isMtMk4_100(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX00(thisPtr) && XsDeviceId_isImu(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 200.
-	\returns True if it is an MTMk4 200.
-	\deprecated Use isMtiX00() and isVru()
-*/
-int XsDeviceId_isMtMk4_200(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX00(thisPtr) && XsDeviceId_isVru(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 300.
-	\returns True if it is an MTMk4 300.
-	\deprecated Use isMtiX00() and isAhrs()
-*/
-int XsDeviceId_isMtMk4_300(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtiX00(thisPtr) && XsDeviceId_isAhrs(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 400.
-	\returns True if it is an MTMk4 400.
-	\deprecated Will be removed
-*/
-int XsDeviceId_isMtMk4_400(const struct XsDeviceId* thisPtr)
-{
-	return ((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_400);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 500.
-	\returns True if it is an MTMk4 500.
-	\deprecated Will be removed
-*/
-int XsDeviceId_isMtMk4_500(const struct XsDeviceId* thisPtr)
-{
-	return ((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_500);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 600.
-	\returns True if it is an MTMk4 600.
-	\deprecated Will be removed
-*/
-int XsDeviceId_isMtMk4_600(const struct XsDeviceId* thisPtr)
-{
-	return ((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_600);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 700.
-	\returns True for all 700 and 710's (Mk4 and Mk5).
-	\deprecated use isGnss() to check for Gnss capabilities,
-				use isMtig() to check for either 700 or 710,
-				use isMtigX00() or isMtigX10() to discern between 700 and 710,
-				use isMtMark4() or isMtMark5() to discern between Mark 4 and Mark 5
-*/
-int XsDeviceId_isMtMk4_700(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtigX00(thisPtr) || XsDeviceId_isMtigX10(thisPtr);
-}
-
-/*! \brief Test if this device ID represents either an MTMk4 710 or Mk5 710.
-	\returns True if it is either an MTMk4 710 or Mk5 710.
-	\deprecated use isGnss() to check for Gnss capabilities, use isMtig() to check for either 700 or 710, use isMtigX00() or isMtigX10() to discern between 700 and 710
-*/
-int XsDeviceId_isMtMk4_710(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtigX10(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 800.
-	\returns True if it is an MTMk4 800.
-	\deprecated Will be removed
-*/
-int XsDeviceId_isMtMk4_800(const struct XsDeviceId* thisPtr)
-{
-	return ((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_800);
-}
-
-/*! \brief Test if this device ID represents an MTMk4 900.
-	\returns True if it is an MTMk4 900.
-	\deprecated Will be removed
-*/
-int XsDeviceId_isMtMk4_900(const struct XsDeviceId* thisPtr)
-{
-	return ((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_900);
-}
-
-/*! \brief Test if this device ID represents an MTMk5.
-	\returns True if it is an MTMk5.
-	\deprecated Use isMtMark5()
-*/
-int XsDeviceId_isMtMk5(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMark5(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 10 series.
-	\returns True if it is an MTMk5 10 series.
-	\deprecated Use isMtMark5() && isMtiX0()
-*/
-int XsDeviceId_isMtMk5_X0(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_X0(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 10.
-	\returns True if it is an MTMk5 10.
-	\deprecated Use isMtMark5() && isMtiX0() && isImu()
-*/
-int XsDeviceId_isMtMk5_10(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_10(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 20.
-	\returns True if it is an MTMk5 20.
-	\deprecated Use isMtMark5() && isMtiX0() && isVru()
-*/
-int XsDeviceId_isMtMk5_20(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_20(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 30.
-	\returns True if it is an MTMk5 30.
-	\deprecated Use isMtMark5() && isMtiX0() && isAhrs()
-*/
-int XsDeviceId_isMtMk5_30(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_30(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 100 series.
-	\returns True if it is an MTMk5 100 series.
-	\deprecated Use isMtMark5() && (isMtiX00() || isMtig())
-*/
-int XsDeviceId_isMtMk5_X00(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_X00(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 100.
-	\returns True if it is an MTMk5 100.
-	\deprecated Use isMtMark5() && isMtiX00() && isImu()
-*/
-int XsDeviceId_isMtMk5_100(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_100(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 200.
-	\returns True if it is an MTMk5 200.
-	\deprecated Use isMtMark5() && isMtiX00() && isVru()
-*/
-int XsDeviceId_isMtMk5_200(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_200(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 300.
-	\returns True if it is an MTMk5 300.
-	\deprecated Use isMtMark5() && isMtiX00() && isAhrs()
-*/
-int XsDeviceId_isMtMk5_300(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_300(thisPtr);
-}
-
-/*! \brief Test if this device ID represents an MTMk5 710.
-	\returns True if it is an MTMk5 710.
-	\deprecated Use (isMtMark5() && isMtigX10())
-*/
-int XsDeviceId_isMtMk5_710(const struct XsDeviceId* thisPtr)
-{
-	return XsDeviceId_isMtMk5(thisPtr) && XsDeviceId_isMtMk4_710(thisPtr);
-}
-
 
 /*! @} */

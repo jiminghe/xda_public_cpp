@@ -1,37 +1,5 @@
 
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
-//  All rights reserved.
-//  
-//  Redistribution and use in source and binary forms, with or without modification,
-//  are permitted provided that the following conditions are met:
-//  
-//  1.	Redistributions of source code must retain the above copyright notice,
-//  	this list of conditions, and the following disclaimer.
-//  
-//  2.	Redistributions in binary form must reproduce the above copyright notice,
-//  	this list of conditions, and the following disclaimer in the documentation
-//  	and/or other materials provided with the distribution.
-//  
-//  3.	Neither the names of the copyright holders nor the names of their contributors
-//  	may be used to endorse or promote products derived from this software without
-//  	specific prior written permission.
-//  
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-//  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-//  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-//  THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
-//  OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY OR
-//  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-//  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.THE LAWS OF THE NETHERLANDS 
-//  SHALL BE EXCLUSIVELY APPLICABLE AND ANY DISPUTES SHALL BE FINALLY SETTLED UNDER THE RULES 
-//  OF ARBITRATION OF THE INTERNATIONAL CHAMBER OF COMMERCE IN THE HAGUE BY ONE OR MORE 
-//  ARBITRATORS APPOINTED IN ACCORDANCE WITH SAID RULES.
-//  
-
-
-//  Copyright (c) 2003-2024 Movella Technologies B.V. or subsidiaries worldwide.
+//  Copyright (c) 2003-2026 Xsens Technologies B.V. or subsidiaries worldwide.
 //  All rights reserved.
 //  
 //  Redistribution and use in source and binary forms, with or without modification,
@@ -114,6 +82,8 @@ Variant* createVariant(XsDataIdentifier id)
 			return new SimpleVariant<uint8_t>(id);
 		case XDI_SampleTime64			:// 0x10A0,
 			return new SimpleVariant<uint64_t>(id);
+		case XDI_PacketCounter32		:// 0x10B0,
+			return new SimpleVariant<uint32_t>(id);
 
 		//case XDI_OrientationGroup		:// 0x2000,
 		case XDI_Quaternion				:// 0x2010,
@@ -122,6 +92,10 @@ Variant* createVariant(XsDataIdentifier id)
 			return new XsMatrixVariant(id);
 		case XDI_EulerAngles			:// 0x2030,
 			return new XsEulerVariant(id);
+		case XDI_QuaternionStd			:// 0x2040,
+			return new XsVector3Variant(id);
+		case XDI_EulerAnglesStd			:// 0x2050,	
+			return new XsVector3Variant(id);
 
 		//case XDI_PressureGroup		:// 0x3000,
 		case XDI_BaroPressure			:// 0x3010,
@@ -143,10 +117,15 @@ Variant* createVariant(XsDataIdentifier id)
 		case XDI_LatLon					:// 0x5040,
 			return new XsVector2Variant(id);
 
+		//case XDI_MaritimeMotionGroup	:// 0x6000,
+		case XDI_HeavePosition			:// 0x6010,
+		case XDI_HeavePeriod			:// 0x6020,
+			return new SimpleVariant<double>(id);
+
 		//case XDI_SnapshotGroup		:// 0xC800,
 		//case XDI_RetransmissionMask	:// 0x0001,
 		//case XDI_RetransmissionFlag	:// 0x0001,
-		case XDI_AwindaSnapshot		:// 0xC810,
+		case XDI_AwindaSnapshot			:// 0xC810,
 			return new XsAwindaSnapshotVariant(id);
 		case XDI_FullSnapshot			:// 0xC820,
 			return new XsFullSnapshotVariant(id);
@@ -171,6 +150,9 @@ Variant* createVariant(XsDataIdentifier id)
 		//case XDI_RawSigned			:// 0x0001, //!< Tracker produces signed raw values, usually fixed behavior
 		case XDI_RawAccGyrMagTemp		:// 0xA010,
 			return new XsScrDataVariant(id);
+
+		case XDI_RawFloatAccGyrMagTemp	:// 0xA090
+			return new XsScrDataFloatVariant(id);
 
 		case XDI_RawGyroTemp			:// 0xA020,
 		case XDI_RawAcc					:// 0xA030,
@@ -216,6 +198,14 @@ Variant* createVariant(XsDataIdentifier id)
 		case XDI_RawBlob				:// 0xA080
 			return new XsByteArrayVariant(id);
 
+		case XDI_GloveSnapshotLeft		:// 0xC830
+		case XDI_GloveSnapshotRight		:// 0xC840
+			return new XsGloveSnapshotVariant(id);
+
+		case XDI_GloveDataLeft			:// 0xC930
+		case XDI_GloveDataRight			:// 0xC940
+			return new XsGloveDataVariant(id);
+
 		default:
 			//JLERRORG("Unknown id: " << id);
 			assert(0);
@@ -235,6 +225,15 @@ XsUShortVector* rawVector(const XsDataPacket* thisPtr, XsUShortVector* returnVal
 		if (it != MAP.end())
 			*returnVal = it->second->toDerived<XsUShortVectorVariant>().m_data;
 	}
+	return returnVal;
+}
+
+XsFloatVector3* rawFloatVector(const XsDataPacket* thisPtr, XsFloatVector3* returnVal, XsFloatVector3 XsScrDataFloat::* field)
+{
+	assert(returnVal);
+	auto it = MAP.find(XDI_RawFloatAccGyrMagTemp);
+	if (it != MAP.end())
+		*returnVal = it->second->toDerived<XsScrDataFloatVariant>().m_data.*field;
 	return returnVal;
 }
 
@@ -750,6 +749,132 @@ extern "C" {
 		}
 	}
 
+	/*!	\brief The raw accelerometer component of a data item.
+
+		\param returnVal : An XsUShortVector to put the requested data in
+
+		\returns A XsFloatVector3 containing the x, y and z axis values in that order
+	*/
+	XsFloatVector3* XsDataPacket_rawAccelerationFloat(const XsDataPacket* thisPtr, XsFloatVector3* returnVal)
+	{
+		return rawFloatVector(thisPtr, returnVal, &XsScrDataFloat::m_acc);
+	}
+
+	/*! \brief Check if data item contains Raw Accelerometer data
+		\returns true if this packet contains raw acceleration data
+	*/
+	int XsDataPacket_containsRawAccelerationFloat(const XsDataPacket* thisPtr)
+	{
+		return	MAP.find(XDI_RawFloatAccGyrMagTemp) != MAP.end();
+	}
+
+	/*! \brief The raw gyroscope component of a data item.
+
+		\param returnVal : An XsUShortVector to put the requested data in
+
+		\returns A XsFloatVector3 containing the x, y and z axis values in that order
+	*/
+	XsFloatVector3* XsDataPacket_rawGyroscopeDataFloat(const XsDataPacket* thisPtr, XsFloatVector3* returnVal)
+	{
+		return rawFloatVector(thisPtr, returnVal, &XsScrDataFloat::m_gyr);
+	}
+
+	/*! \brief Check if data item contains raw gyroscope data
+		\returns true if this packet contains raw gyroscope data
+	*/
+	int XsDataPacket_containsRawGyroscopeDataFloat(const XsDataPacket* thisPtr)
+	{
+		return genericContains(thisPtr, XDI_RawFloatAccGyrMagTemp) || genericContains(thisPtr, XDI_RawGyr);
+	}
+
+	/*! \brief The raw magnetometer component of a data item.
+
+		\param returnVal : An XsUShortVector to put the requested data in
+
+		\returns A XsUShortVector containing the x, y and z axis values in that order
+	*/
+	XsFloatVector3* XsDataPacket_rawMagneticFieldFloat(const XsDataPacket* thisPtr, XsFloatVector3* returnVal)
+	{
+		return rawFloatVector(thisPtr, returnVal, &XsScrDataFloat::m_mag);
+	}
+
+	/*! \brief Check if data item contains raw magnetometer data
+		\returns true if this packet contains raw magnetometer data
+	*/
+	int XsDataPacket_containsRawMagneticFieldFloat(const XsDataPacket* thisPtr)
+	{
+		return	MAP.find(XDI_RawFloatAccGyrMagTemp) != MAP.end();
+	}
+
+	/*! \brief The raw temperature component of a data item.
+
+		\returns An uint16_t containing the raw temperature value
+	*/
+	float XsDataPacket_rawTemperatureFloat(const XsDataPacket* thisPtr)
+	{
+		auto it = MAP.find(XDI_RawFloatAccGyrMagTemp);
+		if (it != MAP.end())
+			return it->second->toDerived<XsScrDataFloatVariant>().m_data.m_temp;
+		else
+			return 0;
+	}
+
+	/*! \brief Check if data item contains raw temperature data
+		\returns true if this packet contains raw temperature data
+	*/
+	int XsDataPacket_containsRawTemperatureFloat(const XsDataPacket* thisPtr)
+	{
+		return	MAP.find(XDI_RawFloatAccGyrMagTemp) != MAP.end();
+	}
+
+	/*! \brief Return the raw data component of a data item.
+		\param returnVal The object to store the requested data in
+		\return The raw data float component of a data item.
+	*/
+	XsScrDataFloat* XsDataPacket_rawDataFloat(const XsDataPacket* thisPtr, XsScrDataFloat* returnVal)
+	{
+		assert(returnVal);
+		auto it = MAP.find(XDI_RawFloatAccGyrMagTemp);
+		if (it != MAP.end())
+			*returnVal = it->second->toDerived<XsScrDataFloatVariant>().m_data;
+		else
+		{
+			for (XsSize i = 0; i < 3; ++i)
+			{
+				returnVal->m_acc[i] = 0;
+				returnVal->m_gyr[i] = 0;
+				returnVal->m_mag[i] = 0;
+			}
+			returnVal->m_temp = 0;
+		}
+		return returnVal;	// not found
+	}
+
+	/*! \brief Check if data item contains raw data float
+		\returns true if this packet contains raw data float
+	*/
+	int XsDataPacket_containsRawDataFloat(const XsDataPacket* thisPtr)
+	{
+		return genericContains(thisPtr, XDI_RawFloatAccGyrMagTemp);
+	}
+
+	/*! \brief Add/update raw data float for the item
+		\param data The new data to set
+	*/
+	void XsDataPacket_setRawDataFloat(XsDataPacket* thisPtr, const XsScrDataFloat* data)
+	{
+		detach(thisPtr);
+		auto it = MAP.find(XDI_RawFloatAccGyrMagTemp);
+		if (it != MAP.end())
+			it->second->toDerived<XsScrDataFloatVariant>().m_data = *data;
+		else
+		{
+			auto v = new XsScrDataFloatVariant(XDI_RawFloatAccGyrMagTemp);
+			v->m_data = *data;
+			MAP.insert(XDI_RawFloatAccGyrMagTemp, v);
+		}
+	}
+
 	/*! \brief The  delta velocity (deltaV) component of a data item.
 	    \param returnVal : The XsVector that the deltaV will be assigned to
 	    \returns An XsVector containing the x, y and z axis values in that order
@@ -923,7 +1048,7 @@ extern "C" {
 
 	    \param returnVal : An XsVector to put the requested in
 
-	    \returns A XsUShortVector containing the x, y and z axis values in that order
+	    \returns A XsUShortVector containing the x, y, and z axis values in that order
 	*/
 	XsVector* XsDataPacket_correctedMagneticField(const XsDataPacket* thisPtr, XsVector* returnVal)
 	{
@@ -987,6 +1112,24 @@ extern "C" {
 		return returnVal;
 	}
 
+	/*! \brief Return the orientation uncertainty component of a data item as a vector.
+
+		\param returnVal An %XsVector to put the requested orientation uncertainty in
+
+		\returns An XsVector containing the orientation uncertainty data
+	*/
+	XsVector* XsDataPacket_orientationQuaternionStd(const XsDataPacket* thisPtr, XsVector* returnVal)
+	{
+		assert(returnVal);
+		auto it = MAP.find(XDI_QuaternionStd);
+		if (it != MAP.end())
+		{
+			*returnVal = it->second->toDerived<XsVector3Variant>().m_data;
+		}
+
+		return returnVal;
+	}
+
 	/*! \brief Removes all orientations from the datapacket */
 	static void removeAllOrientations(XsDataPacket* thisPtr)
 	{
@@ -1005,6 +1148,14 @@ extern "C" {
 		// always create a new one
 		removeAllOrientations(thisPtr);
 		MAP.insert(XDI_Quaternion, new XsQuaternionVariant(XDI_Quaternion | XDI_SubFormatDouble | (coordinateSystem & XDI_CoordSysMask), *data));
+	}
+
+	/*! \brief Add/update quaternion orientation uncertainty data for the item
+		\param data The new data to set
+	*/
+	void XsDataPacket_setOrientationQuaternionStd(XsDataPacket* thisPtr, const XsVector* data)
+	{
+		MAP.insert(XDI_QuaternionStd, new XsVector3Variant(XDI_QuaternionStd | XDI_SubFormatDouble, *data));
 	}
 
 	/*! \brief Return the orientation component of a data item as a euler angles.
@@ -1056,7 +1207,25 @@ extern "C" {
 		return returnVal;
 	}
 
-	/*! \brief Add/update quaternion orientation Data for the item
+	/*! \brief Return the orientation uncertainty component of a data item as a vector.
+
+		\param returnVal An %XsVector to put the requested orientation uncertainty
+
+		\returns A %XsVector containing the orientation uncertainty data
+	*/
+	XsVector* XsDataPacket_orientationEulerStd(const XsDataPacket* thisPtr, XsVector* returnVal)
+	{
+		assert(returnVal);
+		auto it = MAP.find(XDI_EulerAnglesStd);
+		if (it != MAP.end())
+		{
+			*returnVal = it->second->toDerived<XsVector3Variant>().m_data;
+		}
+
+		return returnVal;
+	}
+
+	/*! \brief Add/update euler orientation data for the item
 		\param data The new data to set
 		\param coordinateSystem The coordinate system of the orientation.
 	*/
@@ -1065,6 +1234,14 @@ extern "C" {
 		// always create a new one
 		removeAllOrientations(thisPtr);
 		MAP.insert(XDI_EulerAngles, new XsEulerVariant(XDI_EulerAngles | XDI_SubFormatDouble | (coordinateSystem & XDI_CoordSysMask), *data));
+	}
+
+	/*! \brief Add/update euler orientation uncertainty data for the item
+		\param data The new data to set
+	*/
+	void XsDataPacket_setOrientationEulerStd(XsDataPacket* thisPtr, const XsVector* data)
+	{
+		MAP.insert(XDI_EulerAnglesStd, new XsVector3Variant(XDI_EulerAnglesStd | XDI_SubFormatDouble, *data));
 	}
 
 	/*! \brief Return the orientation component of a data item as a orientation matrix.
@@ -1133,6 +1310,22 @@ extern "C" {
 			genericContains(thisPtr, XDI_RotationMatrix);
 	}
 
+	/*! \brief Check if data item contains orientation quaternion uncertainty data
+		\returns true if this packet contains orientation quaternion uncertainty data
+	*/
+	int XsDataPacket_containsOrientationQuaternionStd(const XsDataPacket* thisPtr)
+	{
+		return	genericContains(thisPtr, XDI_QuaternionStd);
+	}
+
+	/*! \brief Check if data item contains orientation euler uncertainty data
+		\returns true if this packet contains orientation euler uncertainty data
+	*/
+	int XsDataPacket_containsOrientationEulerStd(const XsDataPacket* thisPtr)
+	{
+		return	genericContains(thisPtr, XDI_EulerAnglesStd);
+	}
+
 	/*! \brief Returns the data identifier of the first orientation data of any kind in the packet
 		\returns The %XsDataIdentifier of the first orientation data of any kind in the packet
 	*/
@@ -1179,7 +1372,7 @@ extern "C" {
 
 	/*! \brief The air pressure component of a data item.
 
-		\param returnVal : An XsPressure object to put the requested in
+		\param returnVal : An XsPressure object to put the requested data in
 
 		\returns An XsPressure object containing the pressure and if available the pressure age
 	*/
@@ -1207,6 +1400,58 @@ extern "C" {
 	{
 		GenericSimple<uint32_t>::set(thisPtr, (uint32_t) XsMath::doubleToLong(data->m_pressure), XDI_BaroPressure);
 		GenericSimple<uint8_t>::set(thisPtr, data->m_pressureAge, XDI_PressureAge);
+	}
+
+	/*! \brief The heave position component of a data item.
+	\returns A double containing the heave position value in meters, 0.0 if the packet does not contain heave position
+*/
+	double XsDataPacket_heavePosition(const XsDataPacket* thisPtr)
+	{
+		return GenericSimple<double>::get(thisPtr, XDI_HeavePosition);
+	}
+
+	/*! \brief Check if data item contains heave position data
+		\returns true if this packet contains heave position data
+	*/
+	int XsDataPacket_containsHeavePosition(const XsDataPacket* thisPtr)
+	{
+		return genericContains(thisPtr, XDI_HeavePosition);
+	}
+
+	/*! \brief Adds or updates the heave position data in the datapacket
+		\details The \a heavePos is added to the datapacket. If the packet already contains
+				 heave position it is replaced with the new value.
+		\param heavePos : The heave position to set in meters
+	*/
+	void XsDataPacket_setHeavePosition(XsDataPacket* thisPtr, double heavePos)
+	{
+		GenericSimple<double>::set(thisPtr, heavePos, XDI_HeavePosition | XDI_SubFormatDouble);
+	}
+
+	/*! \brief The heave period component of a data item.
+		\returns A double containing the heave period value in seconds, 0.0 if the packet does not contain heave period
+	*/
+	double XsDataPacket_heavePeriod(const XsDataPacket* thisPtr)
+	{
+		return GenericSimple<double>::get(thisPtr, XDI_HeavePeriod);
+	}
+
+	/*! \brief Check if data item contains heave period data
+		\returns true if this packet contains heave period data
+	*/
+	int XsDataPacket_containsHeavePeriod(const XsDataPacket* thisPtr)
+	{
+		return genericContains(thisPtr, XDI_HeavePeriod);
+	}
+
+	/*! \brief Adds or updates the heave period data in the datapacket
+		\details The \a period is added to the datapacket. If the packet already contains
+				 heave period it is replaced with the new value.
+		\param period : The heave period to set in seconds
+	*/
+	void XsDataPacket_setHeavePeriod(XsDataPacket* thisPtr, double period)
+	{
+		GenericSimple<double>::set(thisPtr, period, XDI_HeavePeriod | XDI_SubFormatDouble);
 	}
 
 	/*! \brief Return the strapdown integration data component of a data item.
@@ -1243,6 +1488,65 @@ extern "C" {
 	{
 		genericSet<XsQuaternion, XsQuaternionVariant>(thisPtr, &data->orientationIncrement(), XDI_DeltaQ | XDI_SubFormatDouble);
 		genericSet<XsVector3, XsVector3Variant>(thisPtr, &data->velocityIncrement(), XDI_DeltaV | XDI_SubFormatDouble);
+	}
+
+	/*! \brief Return the glove data component of a data item.
+		\param returnVal Storage for the requested data
+		\param hand Which hand to get data for, must be either XHI_LeftHand or XHI_RightHand
+		\returns Returns the supplied \a returnVal filled with the requested data
+	*/
+	XsGloveData* XsDataPacket_gloveData(const XsDataPacket* thisPtr, XsGloveData* returnVal, XsHandId hand)
+	{
+		switch (hand)
+		{
+			case XHI_LeftHand:
+				return genericGet<XsGloveData, XsGloveDataVariant>(thisPtr, returnVal, XDI_GloveDataLeft);
+			case XHI_RightHand:
+				return genericGet<XsGloveData, XsGloveDataVariant>(thisPtr, returnVal, XDI_GloveDataRight);
+			case XHI_Unknown:
+			default:
+				XsGloveData_destruct(returnVal);
+				return returnVal;
+		}
+	}
+
+	/*! \brief Check if data item contains glove data
+		\param hand Which hand to get data for, must be either XHI_LeftHand or XHI_RightHand for a particular side or XHI_Unknown for any side
+		\returns Returns true if this packet contains sdi data
+	*/
+	int XsDataPacket_containsGloveData(const XsDataPacket* thisPtr, XsHandId hand)
+	{
+		switch (hand)
+		{
+			case XHI_LeftHand:
+				return genericContains(thisPtr, XDI_GloveDataLeft);
+			case XHI_RightHand:
+				return genericContains(thisPtr, XDI_GloveDataRight);
+			case XHI_Unknown:
+				return genericContains(thisPtr, XDI_GloveDataLeft) || genericContains(thisPtr, XDI_GloveDataRight);
+			default:
+				return false;
+		}
+	}
+
+	/*! \brief Add/update strapdown integration data for the item
+		\param data The updated data
+		\param hand Which hand to get data for, must be either XHI_LeftHand or XHI_RightHand
+	*/
+	void XsDataPacket_setGloveData(XsDataPacket* thisPtr, const XsGloveData* data, XsHandId hand)
+	{
+		switch (hand)
+		{
+			case XHI_LeftHand:
+				genericSet<XsGloveData, XsGloveDataVariant>(thisPtr, data, XDI_GloveDataLeft);
+				break;
+			case XHI_RightHand:
+				genericSet<XsGloveData, XsGloveDataVariant>(thisPtr, data, XDI_GloveDataRight);
+				break;
+			case XHI_Unknown:
+			default:
+				break;
+		}
 	}
 
 	/*! \brief The device id of a data item.
@@ -2353,6 +2657,69 @@ extern "C" {
 		if (it == MAP.end())
 			return false;
 		return (it->second->dataId() & XDI_RetransmissionMask) == XDI_RetransmissionFlag;
+	}
+
+	/*! \brief Returns the Glove Snapshot part of the XsDataPacket
+		\details Glove Snapshot is an internal format used by Xsens devices for high accuracy data transfer.
+		In most cases XDA processing will remove this item from the XsDataPacket and replace it with items that
+		are more directly usable.
+		\param returnVal The object to store the requested data in. This must be a properly constructed object.
+		\param hand Which hand to get data for, must be either XHI_LeftHand or XHI_RightHand
+		\returns The supplied \a returnVal, filled with the requested data or cleared if it was not available
+	*/
+	XsGloveSnapshot* XsDataPacket_gloveSnapshot(const XsDataPacket* thisPtr, XsGloveSnapshot* returnVal, XsHandId hand)
+	{
+		switch (hand)
+		{
+			case XHI_LeftHand:
+				return genericGet<XsGloveSnapshot, XsGloveSnapshotVariant>(thisPtr, returnVal, XDI_GloveSnapshotLeft);
+			case XHI_RightHand:
+				return genericGet<XsGloveSnapshot, XsGloveSnapshotVariant>(thisPtr, returnVal, XDI_GloveSnapshotRight);
+			case XHI_Unknown:
+			default:
+				memset(returnVal, 0, sizeof(XsGloveSnapshot));
+				return returnVal;
+		}
+	}
+
+	/*! \brief Returns true if the XsDataPacket contains Glove Snapshot data
+		\param hand Which hand to get data for, must be either XHI_LeftHand or XHI_RightHand for a particular side or XHI_Unknown for any side
+		\returns true if the XsDataPacket contains Glove Snapshot data
+	*/
+	int XsDataPacket_containsGloveSnapshot(const XsDataPacket* thisPtr, XsHandId hand)
+	{
+		switch (hand)
+		{
+			case XHI_LeftHand:
+				return genericContains(thisPtr, XDI_GloveSnapshotLeft);
+			case XHI_RightHand:
+				return genericContains(thisPtr, XDI_GloveSnapshotRight);
+			case XHI_Unknown:
+				return genericContains(thisPtr, XDI_GloveSnapshotLeft) || genericContains(thisPtr, XDI_GloveSnapshotRight);
+			default:
+				return false;
+		}
+	}
+
+	/*! \brief Sets the Glove Snapshot part of the XsDataPacket
+		\param data The new data to set
+		\param retransmission When non-zero, the item is marked as a retransmitted packet
+		\param hand Which hand to get data for, must be either XHI_LeftHand or XHI_RightHand
+	*/
+	void XsDataPacket_setGloveSnapshot(XsDataPacket* thisPtr, XsGloveSnapshot const* data, int retransmission, XsHandId hand)
+	{
+		switch (hand)
+		{
+			case XHI_LeftHand:
+				genericSet<XsGloveSnapshot, XsGloveSnapshotVariant>(thisPtr, data, XDI_GloveSnapshotLeft | (retransmission ? XDI_RetransmissionFlag : XDI_None));
+				break;
+			case XHI_RightHand:
+				genericSet<XsGloveSnapshot, XsGloveSnapshotVariant>(thisPtr, data, XDI_GloveSnapshotRight | (retransmission ? XDI_RetransmissionFlag : XDI_None));
+				break;
+			case XHI_Unknown:
+			default:
+				break;
+		}
 	}
 
 	/*! \brief Converts input vector \a input with data identifier \a id to output XsVector \a returnVal */
